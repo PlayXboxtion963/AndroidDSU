@@ -72,7 +72,7 @@ public class Packet {
             for(int i=0;i!=4;i++){
                 mout[16+i]=Int2Bytes_LE(this.counter)[0+i];
             }
-            mout[20] =(byte)0; //DPAD left, down, right, up, options, share, R3, L3 00001100
+            mout[20] =(byte)KeyToBitmask(mcontrol); //DPAD left, down, right, up, options,R3, L3 ,share
             mout[21] = 0 ;//# X, A, B, Y, R1, L1, R2, L2
             mout[22] = (byte) mcontrol.PS  ;//# button.PS
             mout[23] = 0x0  ;//# button.touch
@@ -92,15 +92,12 @@ public class Packet {
             mout[37] = (byte) mcontrol.L1;//# L1
             mout[38] = (byte) mcontrol.R2;  ;//# R2
             mout[39] = (byte) mcontrol.L2; //# L2
-            mout[40] = 0x0  ;//# trackpad 1 is active
-            mout[41] = 0x0  ;//# trackpad 1 id
-            for(int i=0;i!=4;i++){
-                mout[42+i]=0;
-            }
-            mout[46]=0;
-            mout[47]=0;
             for(int i=0;i!=12;i++){
-                mout[48+i]=0;
+                mout[40+i]=0;
+            }
+            long motion=System.currentTimeMillis();
+            for(int i=0;i!=8;i++){
+                mout[52+i]=LongToBytes(motion)[i];
             }
             float buffer = mcontrol.accelX;
             ByteBuffer bbuf = ByteBuffer.allocate(4);
@@ -176,6 +173,7 @@ public class Packet {
         byte[] mout = new byte[0];
         return this.generate(mout);
     }
+
     public byte[] answernocon(int slot){
 
             byte[] mout = new byte[16];
@@ -208,7 +206,7 @@ public class Packet {
         }
         return buffer;
     }
-        public byte[] generate(byte[] data){
+    public byte[] generate(byte[] data){
         byte[] buffer = new byte[16];
         buffer[0]=(int) 'D';
         buffer[1]=(int)'S';
@@ -241,8 +239,6 @@ public class Packet {
 
             return btZ;
         }
-
-
     public static byte[] intToByteArray(int i) {
         byte[] result = new byte[4];
         result[0] = (byte)((i >> 24) & 0xFF);
@@ -251,10 +247,6 @@ public class Packet {
         result[3] = (byte)(i & 0xFF);
         return result;
     }
-
-
-
-
     public static long byteArrayToLong(byte[] array,int start,int end) {
 
         byte[] lowArray = Arrays.copyOfRange(array,start,end);
@@ -274,9 +266,6 @@ public class Packet {
         rst[3] = (byte)((iValue & 0xFF000000) >> 24 );
         return rst;
     }
-
-
-
     public static String substring(String str, int f, int t) {
         if (f > str.length())
             return null;
@@ -285,5 +274,29 @@ public class Packet {
         } else {
             return str.substring(f, t);
         }
+    }
+    public int KeyToBitmask(Controller mcontrol){
+        int a=00000000;
+        if(mcontrol.Option==1){
+            a |= (1 << 3);
+        }
+        if(mcontrol.R3==1){
+        a |= (1 << 2);
+        }
+        if(mcontrol.L3==1){
+            a |= (1 << 1);
+        }
+        if(mcontrol.Share==1){
+            a |= (1 << 0);
+        }
+        return a;
+    }
+    public static byte[] LongToBytes(long values) {
+        byte[] buffer = new byte[8];
+        for (int i = 0; i < 8; i++) {
+            int offset = 64 - (i + 1) * 8;
+            buffer[i] = (byte) ((values >> offset) & 0xff);
+        }
+        return buffer;
     }
 }

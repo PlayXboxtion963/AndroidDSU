@@ -12,6 +12,7 @@ public class Controller {
     int Dpad_Right=0x0;
     int Dpad_Down=0x0;
     int A,B,X,Y,PLUS,DEDUCE,HOME,PS,R1,L1,R2,L2;
+    int L3,R3,Option,Share,trueDpadLeft,trueDpadup,trueDpadRight,trueDpadDown;
     Boolean isActive = true;
     int state;
     int model;

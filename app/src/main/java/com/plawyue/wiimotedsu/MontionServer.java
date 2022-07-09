@@ -21,11 +21,11 @@ public class MontionServer {
     DatagramSocket socket = null;
     float accX, accY, accZ;
     float gyroR,gyroY,gyroP;
-    int A,B,X,Y,OPTION,SHARE,PS,R1=0,L1=0,R2=0,L2=0;
+    int A,B,X,Y,OPKEY,SHARE,PS,R1=0,L1=0,R2=0,L2=0,L3,R3;
     int Dpad_Left=0x0,Dpad_UP=0x0,Dpad_Right=0x0,Dpad_Down=0x0;
     String ip = null;
     int port=0;
-    Boolean cansend=true;
+    Boolean cansend=false;
     Boolean threadlock=false;
     Packet receivedPacket = new Packet();
     int cansendflag=0;
@@ -62,15 +62,17 @@ public class MontionServer {
                 mcontrol.L1=L1;
                 mcontrol.L2=L2;
                 mcontrol.PS=PS;
+                mcontrol.R3=R3;
+                mcontrol.L3=L3;
+                mcontrol.Option=OPKEY;
+                mcontrol.Share=SHARE;
                 mcontrol.Dpad_UP=Dpad_UP;
                 mcontrol.Dpad_Left=Dpad_Left;
                 mcontrol.Dpad_Down=Dpad_Down;
                 mcontrol.Dpad_Right=Dpad_Right;
                 try {
-                    if(cansend!=false) {
                         socket.send(bytesztopack(receivedPacket.answer(mcontrol, 1), ip, port));
-                    }
-                    Thread.sleep(80);
+                        Thread.sleep(20);
                 } catch (Exception exception) {
                 }
                 }
@@ -81,35 +83,29 @@ public class MontionServer {
         byte[] buf = new byte[1024];
         packet = new DatagramPacket(buf, buf.length);
         while (true) {
-
-            final Boolean[] is = {true};
             try {
                 socket.receive(packet);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             ip = packet.getAddress().getHostAddress();
-            port = packet.getPort();
             buf = packet.getData();
             len = packet.getLength();
             data = new String(buf, 0, len);
             receivedPacket.init(buf, data, len);
             if (receivedPacket.type == 1048577) {
                 try {
-                    cansend=false;
-                    socket.send(bytesztopack(receivedPacket.answer(mcontrol, 0), ip, port));
-                    socket.send(bytesztopack(receivedPacket.answernocon(1), ip, port));
-                    socket.send(bytesztopack(receivedPacket.answernocon(2), ip,port));
-                    socket.send(bytesztopack(receivedPacket.answernocon(3), ip,port));
-                    cansend=true;
+                    socket.send(bytesztopack(receivedPacket.answer(mcontrol, 0), ip, packet.getPort()));
+                    socket.send(bytesztopack(receivedPacket.answernocon(1), ip, packet.getPort()));
+                    socket.send(bytesztopack(receivedPacket.answernocon(2), ip,packet.getPort()));
+                    socket.send(bytesztopack(receivedPacket.answernocon(3), ip,packet.getPort()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-
-
-
-
+            else if(receivedPacket.type==1048578){
+                port=packet.getPort();
+            }
         }
     }
 
@@ -124,6 +120,7 @@ public class MontionServer {
         DatagramPacket packetx = null;
             try {
                     packetx= new DatagramPacket(mdata, mdata.length, InetAddress.getByName(ip), port);
+                return packetx;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

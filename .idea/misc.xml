@@ -3,7 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/fullscr.xml" value="0.249" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/activity_main.xml" value="0.25" />
       </map>
     </option>
   </component>

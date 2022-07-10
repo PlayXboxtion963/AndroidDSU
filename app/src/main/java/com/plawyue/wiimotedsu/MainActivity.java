@@ -1,8 +1,14 @@
 package com.plawyue.wiimotedsu;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
+import android.app.UiModeManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,6 +18,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.HapticFeedbackConstants;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,8 +26,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DecimalFormat;
+import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,19 +40,25 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     static double PI = 3.1415926535897932;
     Button L3,R3,OPkey,SHARE;
     Boolean locked=false;
-    Button button_A,button_B,button_DUP,button_DDOWN,button_DLEFT,button_DRight,button_PLUS,button_DEDUCE,BUTTON_home,L2,R2,Touch;
+    Button button_A,button_B,button_DUP,button_DDOWN,button_DLEFT,button_DRight,button_PLUS,button_DEDUCE,BUTTON_home,L2,R2,Touch,button_X,button_Y;
     EditText Sensitive;
     static float METER_PER_SECOND_SQUARED_TO_G = (float) 9.8066;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+
+    protected void onCreate(Bundle savedInstanceState) {
+
+
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        registerReceiver(mBatInfoReveiver, new IntentFilter(
+                Intent.ACTION_BATTERY_CHANGED));
         Sensitive=findViewById(R.id.Sensitive);
-        Sensitive.setText("0.9");
+
         Touch=findViewById(R.id.Button_touchlock);
         Touch.setOnClickListener(this);
         button_A=findViewById(R.id.button_A);
+        button_X=findViewById(R.id.Square);
+        button_Y=findViewById(R.id.Tri);
         button_B=findViewById(R.id.button_B);
         button_DUP=findViewById(R.id.button_dUp);
         button_DDOWN=findViewById(R.id.button_Ddown);
@@ -56,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         R3=findViewById(R.id.buttonR3);
         SHARE=findViewById(R.id.buttonShare);
         OPkey=findViewById(R.id.buttonOption);
+        button_Y.setOnTouchListener(this);
+        button_X.setOnTouchListener(this);
         L3.setOnTouchListener(this);
         R3.setOnTouchListener(this);
         SHARE.setOnTouchListener(this);
@@ -73,7 +90,23 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         button_PLUS.setOnTouchListener(this);
         button_DEDUCE.setOnTouchListener(this);
         BUTTON_home.setOnTouchListener(this);
-        WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        SharedPreferences userInfo = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
+        SharedPreferences.Editor editor = userInfo.edit();//获取Editor
+        if(userInfo.contains("Sensitivesave")==false){
+            editor.putString("Sensitivesave","0.9");
+            editor.commit();
+        }
+        Sensitive.setText(userInfo.getString("Sensitivesave","0"));
+        Sensitive.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                editor.putString("Sensitivesave",Sensitive.getText().toString());
+                editor.commit();
+                Toast.makeText(MainActivity.this,"Sensitive has saved", Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         int ipAddress = wifiInfo.getIpAddress();
         String ip = (ipAddress & 0xff) + "." + (ipAddress>>8 & 0xff) + "." + (ipAddress>>16 & 0xff) + "." + (ipAddress >> 24 & 0xff);
@@ -158,6 +191,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             switch (view.getId()){
                 case R.id.button_A: button_A.setBackgroundColor(Color.RED);ms.A=255;break;
                 case R.id.button_B: button_B.setBackgroundColor(Color.RED); ms.B=255;break;
+                case R.id.Square: button_X.setBackgroundColor(Color.RED); ms.X=255;break;
+                case R.id.Tri: button_Y.setBackgroundColor(Color.RED); ms.Y=255;break;
                 case R.id.button_dUp: button_DUP.setBackgroundColor(Color.RED); ms.Dpad_UP=255;break;
                 case R.id.button_Ddown: button_DDOWN.setBackgroundColor(Color.RED); ms.Dpad_Down=255;break;
                 case R.id.button_Dleft: button_DLEFT.setBackgroundColor(Color.RED); ms.Dpad_Left=255;break;
@@ -179,6 +214,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             switch (view.getId()){
                 case R.id.button_A: button_A.setBackgroundColor(Color.WHITE);ms.A=0;break;
                 case R.id.button_B: button_B.setBackgroundColor(Color.WHITE); ms.B=0;break;
+                case R.id.Square: button_X.setBackgroundColor(Color.WHITE); ms.X=0;break;
+                case R.id.Tri: button_Y.setBackgroundColor(Color.WHITE); ms.Y=0;break;
                 case R.id.button_dUp: button_DUP.setBackgroundColor(Color.WHITE); ms.Dpad_UP=0;break;
                 case R.id.button_Ddown: button_DDOWN.setBackgroundColor(Color.WHITE); ms.Dpad_Down=0;break;
                 case R.id.button_Dleft: button_DLEFT.setBackgroundColor(Color.WHITE); ms.Dpad_Left=0;break;
@@ -200,14 +237,17 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     @Override
     public void onClick(View view) {
+        getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.CONFIRM);
         if(view.getId()==R.id.Button_touchlock){
             if(locked==true){
                 Touch.setText("LOCK");
                 Sensitive.setVisibility(View.VISIBLE);
+                findViewById(R.id.LOCK).setVisibility(View.INVISIBLE);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }else{
                 Touch.setText("UNLOCK");
                 Sensitive.setVisibility(View.INVISIBLE);
+                findViewById(R.id.LOCK).setVisibility(View.VISIBLE);
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 
@@ -215,4 +255,71 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             locked=!locked;
         }
     }
+    @Override
+    public boolean onKeyDown (int keyCode, KeyEvent event) {
+        getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+        switch (keyCode) {
+// 音量减小
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                button_A.setBackgroundColor(Color.RED);ms.A=255;
+                return true;
+// 音量增大
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                button_B.setBackgroundColor(Color.RED); ms.B=255;
+                return true;
+            case KeyEvent.KEYCODE_BACK:
+                if(locked){
+                return true;}
+        }
+        return super.onKeyDown (keyCode, event);
+    }
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event){
+        getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY_RELEASE);
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                button_A.setBackgroundColor(Color.WHITE);ms.A=0;
+
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                button_B.setBackgroundColor(Color.WHITE); ms.B=0;
+                return true;
+        }
+        return super.onKeyUp (keyCode, event);
+    }
+    private void onBatteryInfoReceiver(int intLevel, int intScale) {
+        // TODO Auto-generated method stub
+        int percent = intLevel*100/ intScale;
+        if(percent>90){
+            ms.battery=0x05;
+        }
+        else if(percent>80&&percent<90){
+            ms.battery=0x04;
+        }
+        else if(percent<80&&percent>40){
+            ms.battery=0x03;
+        }else if(percent<40&&percent>20){
+            ms.battery=0x02;
+        }else if(percent<20){
+            ms.battery=0x01;
+        }
+    };
+    //创建BroadcastReceiver
+    private BroadcastReceiver mBatInfoReveiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            //如果捕捉到的Action是ACTION_BATTERY_CHANGED则运行onBatteryInforECEIVER()
+            if(intent.ACTION_BATTERY_CHANGED.equals(action))
+            {
+                //获得当前电量
+                int intLevel = intent.getIntExtra("level",0);
+                //获得手机总电量
+                int intScale = intent.getIntExtra("scale",100);
+                // 在下面会定义这个函数，显示手机当前电量
+                onBatteryInfoReceiver(intLevel, intScale);
+            }
+        }
+    };
+
 }

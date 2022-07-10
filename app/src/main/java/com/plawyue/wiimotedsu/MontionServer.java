@@ -25,6 +25,7 @@ public class MontionServer {
     int Dpad_Left=0x0,Dpad_UP=0x0,Dpad_Right=0x0,Dpad_Down=0x0;
     String ip = null;
     int port=0;
+    int battery;
     Boolean cansend=false;
     Boolean threadlock=false;
     Packet receivedPacket = new Packet();
@@ -70,6 +71,7 @@ public class MontionServer {
                 mcontrol.Dpad_Left=Dpad_Left;
                 mcontrol.Dpad_Down=Dpad_Down;
                 mcontrol.Dpad_Right=Dpad_Right;
+                mcontrol.battery=battery;
                 try {
                         socket.send(bytesztopack(receivedPacket.answer(mcontrol, 1), ip, port));
                         Thread.sleep(20);

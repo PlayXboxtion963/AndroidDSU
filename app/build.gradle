@@ -7,10 +7,10 @@ android {
 
     defaultConfig {
         applicationId "com.plawyue.wiimotedsu"
-        minSdk 26
+        minSdk 22
         targetSdk 32
         versionCode 1
-        versionName "1.0Beta"
+        versionName "1.1Beta"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

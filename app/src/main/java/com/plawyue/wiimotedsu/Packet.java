@@ -66,7 +66,7 @@ public class Packet {
             mout[11]= (byte) 0x9a;
             mout[12]= (byte) 0xbc;
             mout[13]= (byte) 0xdf;
-            mout[14]= (byte) 0x04;
+            mout[14]= (byte) mcontrol.battery;
             mout[15]=1;
             this.counter+=1;
             for(int i=0;i!=4;i++){

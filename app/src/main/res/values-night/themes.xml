@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.WIIMoteDSU" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#6E6A6A</item>
-        <item name="colorPrimaryVariant">#221C1C</item>
+        <item name="colorPrimary">#497367</item>
+        <item name="colorPrimaryVariant">#212918</item>
         <item name="colorOnPrimary">#221C1C</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>

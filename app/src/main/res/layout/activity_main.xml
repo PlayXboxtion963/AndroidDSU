@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#221C1C"
+    android:background="#212918"
     tools:context=".MainActivity">
 
 
@@ -55,14 +55,16 @@
                 <Button
                     android:id="@+id/button_home"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="PS" />
+
+
 
                 <Button
                     android:id="@+id/Button_touchlock"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="LOCK" />
 
@@ -107,6 +109,15 @@
                     android:textColor="@android:color/holo_orange_dark"
                     android:textColorHint="@android:color/holo_orange_dark"
                     android:theme="@style/MyEditText" />
+
+                <Switch
+                    android:id="@+id/editmode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/material_dynamic_primary100"
+                    android:layout_weight="1"
+                    android:text="Edit Text Mode"
+                   />
             </LinearLayout>
 
         </LinearLayout>

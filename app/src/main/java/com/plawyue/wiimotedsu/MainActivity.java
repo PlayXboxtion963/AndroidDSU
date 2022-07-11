@@ -1,22 +1,34 @@
 package com.plawyue.wiimotedsu;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 
-import android.app.UiModeManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -24,12 +36,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Switch;
+import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import java.text.DecimalFormat;
-import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,10 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     Button button_A,button_B,button_DUP,button_DDOWN,button_DLEFT,button_DRight,button_PLUS,button_DEDUCE,BUTTON_home,L2,R2,Touch,button_X,button_Y;
     EditText Sensitive;
     static float METER_PER_SECOND_SQUARED_TO_G = (float) 9.8066;
-
-
     protected void onCreate(Bundle savedInstanceState) {
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -90,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         button_PLUS.setOnTouchListener(this);
         button_DEDUCE.setOnTouchListener(this);
         BUTTON_home.setOnTouchListener(this);
+
+
         SharedPreferences userInfo = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
         SharedPreferences.Editor editor = userInfo.edit();//获取Editor
         if(userInfo.contains("Sensitivesave")==false){
@@ -171,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
                 SensorManager.SENSOR_DELAY_UI);
     }
-
     public static boolean isNumeric(String str){
 
         Pattern pattern = Pattern.compile("[0-9]*\\.?[0-9]+");
@@ -189,46 +200,46 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             switch (view.getId()){
-                case R.id.button_A: button_A.setBackgroundColor(Color.RED);ms.A=255;break;
-                case R.id.button_B: button_B.setBackgroundColor(Color.RED); ms.B=255;break;
-                case R.id.Square: button_X.setBackgroundColor(Color.RED); ms.X=255;break;
-                case R.id.Tri: button_Y.setBackgroundColor(Color.RED); ms.Y=255;break;
-                case R.id.button_dUp: button_DUP.setBackgroundColor(Color.RED); ms.Dpad_UP=255;break;
-                case R.id.button_Ddown: button_DDOWN.setBackgroundColor(Color.RED); ms.Dpad_Down=255;break;
-                case R.id.button_Dleft: button_DLEFT.setBackgroundColor(Color.RED); ms.Dpad_Left=255;break;
-                case R.id.button_Dright:button_DRight.setBackgroundColor(Color.RED); ms.Dpad_Right=255;break;
-                case R.id.button_PLUS:button_PLUS.setBackgroundColor(Color.RED); ms.R1=255;break;
-                case R.id.button_DEDUCE:button_DEDUCE.setBackgroundColor(Color.RED); ms.L1=255;break;
-                case R.id.button_home:BUTTON_home.setBackgroundColor(Color.RED);ms.PS=1;break;
-                case R.id.button_L2:L2.setBackgroundColor(Color.RED);ms.L2=255;break;
-                case R.id.button_R2:R2.setBackgroundColor(Color.RED);ms.R2=255;break;
-                case R.id.buttonR3:R3.setBackgroundColor(Color.RED);ms.R3=1;break;
-                case R.id.buttonL3:L3.setBackgroundColor(Color.RED);ms.L3=1;break;
-                case R.id.buttonOption:OPkey.setBackgroundColor(Color.RED);ms.OPKEY=1;break;
-                case R.id.buttonShare:SHARE.setBackgroundColor(Color.RED);ms.SHARE=1;break;
+                case R.id.button_A: button_A.setBackgroundColor(Color.GREEN);ms.A=255;break;
+                case R.id.button_B: button_B.setBackgroundColor(Color.GREEN); ms.B=255;break;
+                case R.id.Square: button_X.setBackgroundColor(Color.GREEN); ms.X=255;break;
+                case R.id.Tri: button_Y.setBackgroundColor(Color.GREEN); ms.Y=255;break;
+                case R.id.button_dUp: button_DUP.setBackgroundColor(Color.GREEN); ms.Dpad_UP=255;break;
+                case R.id.button_Ddown: button_DDOWN.setBackgroundColor(Color.GREEN); ms.Dpad_Down=255;break;
+                case R.id.button_Dleft: button_DLEFT.setBackgroundColor(Color.GREEN); ms.Dpad_Left=255;break;
+                case R.id.button_Dright:button_DRight.setBackgroundColor(Color.GREEN); ms.Dpad_Right=255;break;
+                case R.id.button_PLUS:button_PLUS.setBackgroundColor(Color.GREEN); ms.R1=255;break;
+                case R.id.button_DEDUCE:button_DEDUCE.setBackgroundColor(Color.GREEN); ms.L1=255;break;
+                case R.id.button_home:BUTTON_home.setBackgroundColor(Color.GREEN);ms.PS=1;break;
+                case R.id.button_L2:L2.setBackgroundColor(Color.GREEN);ms.L2=255;break;
+                case R.id.button_R2:R2.setBackgroundColor(Color.GREEN);ms.R2=255;break;
+                case R.id.buttonR3:R3.setBackgroundColor(Color.GREEN);ms.R3=1;break;
+                case R.id.buttonL3:L3.setBackgroundColor(Color.GREEN);ms.L3=1;break;
+                case R.id.buttonOption:OPkey.setBackgroundColor(Color.GREEN);ms.OPKEY=1;break;
+                case R.id.buttonShare:SHARE.setBackgroundColor(Color.GREEN);ms.SHARE=1;break;
 
 
             }
         }else if( motionEvent.getAction() == MotionEvent.ACTION_UP){
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY_RELEASE);
             switch (view.getId()){
-                case R.id.button_A: button_A.setBackgroundColor(Color.WHITE);ms.A=0;break;
-                case R.id.button_B: button_B.setBackgroundColor(Color.WHITE); ms.B=0;break;
-                case R.id.Square: button_X.setBackgroundColor(Color.WHITE); ms.X=0;break;
-                case R.id.Tri: button_Y.setBackgroundColor(Color.WHITE); ms.Y=0;break;
-                case R.id.button_dUp: button_DUP.setBackgroundColor(Color.WHITE); ms.Dpad_UP=0;break;
-                case R.id.button_Ddown: button_DDOWN.setBackgroundColor(Color.WHITE); ms.Dpad_Down=0;break;
-                case R.id.button_Dleft: button_DLEFT.setBackgroundColor(Color.WHITE); ms.Dpad_Left=0;break;
-                case R.id.button_Dright: button_DRight.setBackgroundColor(Color.WHITE); ms.Dpad_Right=0;break;
-                case R.id.button_PLUS:button_PLUS.setBackgroundColor(Color.WHITE); ms.R1=0;break;
-                case R.id.button_DEDUCE:button_DEDUCE.setBackgroundColor(Color.WHITE); ms.L1=0;break;
-                case R.id.button_home:BUTTON_home.setBackgroundColor(Color.WHITE);ms.PS=0;break;
-                case R.id.button_L2:L2.setBackgroundColor(Color.WHITE);ms.L2=0;break;
-                case R.id.button_R2:R2.setBackgroundColor(Color.WHITE);ms.R2=0;break;
-                case R.id.buttonR3:R3.setBackgroundColor(Color.WHITE);ms.R3=0;break;
-                case R.id.buttonL3:L3.setBackgroundColor(Color.WHITE);ms.L3=0;break;
-                case R.id.buttonOption:OPkey.setBackgroundColor(Color.WHITE);ms.OPKEY=0;break;
-                case R.id.buttonShare:SHARE.setBackgroundColor(Color.WHITE);ms.SHARE=0;break;
+                case R.id.button_A: button_A.setBackgroundColor(Color.parseColor("#6E6A6A"));ms.A=0;break;
+                case R.id.button_B: button_B.setBackgroundColor(Color.parseColor("#6E6A6A")); ms.B=0;break;
+                case R.id.Square: button_X.setBackgroundColor(Color.parseColor("#6E6A6A")); ms.X=0;break;
+                case R.id.Tri: button_Y.setBackgroundColor(Color.parseColor("#6E6A6A")); ms.Y=0;break;
+                case R.id.button_dUp: button_DUP.setBackgroundColor(Color.parseColor("#6E6A6A")); ms.Dpad_UP=0;break;
+                case R.id.button_Ddown: button_DDOWN.setBackgroundColor(Color.parseColor("#6E6A6A")); ms.Dpad_Down=0;break;
+                case R.id.button_Dleft: button_DLEFT.setBackgroundColor(Color.parseColor("#6E6A6A")); ms.Dpad_Left=0;break;
+                case R.id.button_Dright: button_DRight.setBackgroundColor(Color.parseColor("#6E6A6A")); ms.Dpad_Right=0;break;
+                case R.id.button_PLUS:button_PLUS.setBackgroundColor(Color.parseColor("#6E6A6A")); ms.R1=0;break;
+                case R.id.button_DEDUCE:button_DEDUCE.setBackgroundColor(Color.parseColor("#6E6A6A")); ms.L1=0;break;
+                case R.id.button_home:BUTTON_home.setBackgroundColor(Color.parseColor("#6E6A6A"));ms.PS=0;break;
+                case R.id.button_L2:L2.setBackgroundColor(Color.parseColor("#6E6A6A"));ms.L2=0;break;
+                case R.id.button_R2:R2.setBackgroundColor(Color.parseColor("#6E6A6A"));ms.R2=0;break;
+                case R.id.buttonR3:R3.setBackgroundColor(Color.parseColor("#6E6A6A"));ms.R3=0;break;
+                case R.id.buttonL3:L3.setBackgroundColor(Color.parseColor("#6E6A6A"));ms.L3=0;break;
+                case R.id.buttonOption:OPkey.setBackgroundColor(Color.parseColor("#6E6A6A"));ms.OPKEY=0;break;
+                case R.id.buttonShare:SHARE.setBackgroundColor(Color.parseColor("#6E6A6A"));ms.SHARE=0;break;
             }
         }
         }
@@ -261,11 +272,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         switch (keyCode) {
 // 音量减小
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                button_A.setBackgroundColor(Color.RED);ms.A=255;
+                button_A.setBackgroundColor(Color.GREEN);ms.A=255;
                 return true;
 // 音量增大
             case KeyEvent.KEYCODE_VOLUME_UP:
-                button_B.setBackgroundColor(Color.RED); ms.B=255;
+                button_B.setBackgroundColor(Color.GREEN); ms.B=255;
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if(locked){
@@ -278,11 +289,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY_RELEASE);
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                button_A.setBackgroundColor(Color.WHITE);ms.A=0;
-
+                button_A.setBackgroundColor(Color.parseColor("#6E6A6A"));ms.A=0;
                 return true;
             case KeyEvent.KEYCODE_VOLUME_UP:
-                button_B.setBackgroundColor(Color.WHITE); ms.B=0;
+                button_B.setBackgroundColor(Color.parseColor("#6E6A6A")); ms.B=0;
                 return true;
         }
         return super.onKeyUp (keyCode, event);
@@ -321,5 +331,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             }
         }
     };
+
 
 }

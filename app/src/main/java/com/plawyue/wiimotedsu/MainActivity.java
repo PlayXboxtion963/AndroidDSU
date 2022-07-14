@@ -1,8 +1,11 @@
 package com.plawyue.wiimotedsu;
 
+import androidx.annotation.IntRange;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,47 +13,59 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+
+import android.os.Handler;
+import android.os.Message;
 import android.renderscript.Allocation;
-import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.util.DisplayMetrics;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+
 import android.widget.ImageView;
-import android.widget.MediaController;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MainActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class MainActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener, View.OnLongClickListener {
     private SensorManager sensorManager;
     private Sensor sensor;
     MontionServer ms=new MontionServer();
@@ -58,20 +73,59 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     Button L3,R3,OPkey,SHARE,Colorx;
     Boolean locked=false;
     Button button_A,button_B,button_DUP,button_DDOWN,button_DLEFT,button_DRight,button_PLUS,button_DEDUCE,BUTTON_home,L2,R2,Touch,button_X,button_Y;
-    EditText Sensitive;
+    float accSensitivity=0.9f;
     Boolean isEditMode=false;
+    Dialog yourDialog;
+    SeekBar yourDialogSeekBar;
     static float METER_PER_SECOND_SQUARED_TO_G = (float) 9.8066;
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar mtoorbar=findViewById(R.id.toolbar);
+        mtoorbar.setOnMenuItemClickListener(onMenuItemClick);
+        mtoorbar.inflateMenu(R.menu.menu);
         registerReceiver(mBatInfoReveiver, new IntentFilter(
                 Intent.ACTION_BATTERY_CHANGED));
-        Sensitive=findViewById(R.id.Sensitive);
         Switch editmodeswitch=findViewById(R.id.editmode);
         editmodeswitch.setOnCheckedChangeListener(this);
-        Touch=findViewById(R.id.Button_touchlock);
 
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.senseseekbar, (ViewGroup) findViewById(R.id.elementseek));
+        Button yourDialogButton = (Button) layout.findViewById(R.id.your_dialog_button);
+        yourDialogSeekBar = layout.findViewById(R.id.your_dialog_seekbar);
+        yourDialog = new Dialog(this);
+        yourDialog.setContentView(layout);
+        TextView lighttext = layout.findViewById(R.id.lighttext);
+        SeekBar.OnSeekBarChangeListener yourSeekBarListener = new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //add code here
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //add code here
+
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBark, int progress, boolean fromUser) {
+                //add code here
+                layout.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
+                lighttext.setText("sensitive set as:" + progress/10.0);
+                accSensitivity= (float) (progress/10.0);
+            }
+        };
+        yourDialogButton.setOnClickListener(this);
+        yourDialogSeekBar.setOnSeekBarChangeListener(yourSeekBarListener);
+        Lightlayout = layout;
+        TextView Locktips=findViewById(R.id.LOCK);
+        Locktips.setOnClickListener(this);
+        Locktips.setOnLongClickListener(this);
+        Locktips.setOnTouchListener(this);
+        Touch=findViewById(R.id.Button_touchlock);
         Touch.setOnClickListener(this);
         button_A=findViewById(R.id.button_A);
         button_X=findViewById(R.id.Square);
@@ -128,26 +182,19 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         SharedPreferences userInfo = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
         SharedPreferences.Editor editor = userInfo.edit();//获取Editor
-        if(userInfo.contains("Sensitivesave")==false){
-            editor.putString("Sensitivesave","0.9");
+        if(userInfo.contains("sensisavin")==false){
+            editor.putFloat("sensisavin",0.9F);
             editor.commit();
         }
-        Sensitive.setText(userInfo.getString("Sensitivesave","0"));
-        Sensitive.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                editor.putString("Sensitivesave",Sensitive.getText().toString());
-                editor.commit();
-                Toast.makeText(MainActivity.this,"Sensitive has saved", Toast.LENGTH_LONG).show();
-                return false;
-            }
-        });
+        accSensitivity=userInfo.getFloat("sensisavin",0.9F);
+        yourDialogSeekBar.setProgress((int) (accSensitivity*10));
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         int ipAddress = wifiInfo.getIpAddress();
         String ip = (ipAddress & 0xff) + "." + (ipAddress>>8 & 0xff) + "." + (ipAddress>>16 & 0xff) + "." + (ipAddress >> 24 & 0xff);
-        TextView IPT=findViewById(R.id.YouIP);
-        IPT.setText(ip);
+
+        mtoorbar.setTitle(ip);
+        mtoorbar.setTitleTextColor(getResources().getColor(R.color.spical));
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -166,11 +213,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
             }
             public void onSensorChanged(SensorEvent event) {
-                float accSensitivity= (float) 0.9;
-                String sensi=Sensitive.getText().toString().trim();
-                if(isNumeric(sensi)){
-                accSensitivity= Float.parseFloat(Sensitive.getText().toString());
-                }
                 Boolean conver=true;
                 Boolean noconver=false;
                 float accX = -accSensitivity * event.values[2] * METER_PER_SECOND_SQUARED_TO_G / 100;
@@ -223,76 +265,164 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     }
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+        if(view.getId()==R.id.LOCK&&motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+            view.animate().scaleX(0.9f).scaleY(0.9f).setDuration(200).start();
+
+        }else if(view.getId()==R.id.LOCK&&motionEvent.getAction() == MotionEvent.ACTION_UP){
+            view.animate().scaleX(1f).scaleY(1f).setDuration(200).start();
+
+        }
     if(locked==false){
         if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+            view.animate().scaleX(0.9f).scaleY(0.9f).setDuration(100).start();
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             switch (view.getId()){
-                case R.id.button_A: button_A.setBackgroundColor(Color.GREEN);ms.A=255;break;
-                case R.id.button_B: button_B.setBackgroundColor(Color.GREEN); ms.B=255;break;
-                case R.id.Square: button_X.setBackgroundColor(Color.GREEN); ms.X=255;break;
-                case R.id.Tri: button_Y.setBackgroundColor(Color.GREEN); ms.Y=255;break;
-                case R.id.button_dUp: button_DUP.setBackgroundColor(Color.GREEN); ms.Dpad_UP=255;break;
-                case R.id.button_Ddown: button_DDOWN.setBackgroundColor(Color.GREEN); ms.Dpad_Down=255;break;
-                case R.id.button_Dleft: button_DLEFT.setBackgroundColor(Color.GREEN); ms.Dpad_Left=255;break;
-                case R.id.button_Dright:button_DRight.setBackgroundColor(Color.GREEN); ms.Dpad_Right=255;break;
-                case R.id.button_PLUS:button_PLUS.setBackgroundColor(Color.GREEN); ms.R1=255;break;
-                case R.id.button_DEDUCE:button_DEDUCE.setBackgroundColor(Color.GREEN); ms.L1=255;break;
-                case R.id.button_home:BUTTON_home.setBackgroundColor(Color.GREEN);ms.PS=1;break;
-                case R.id.button_L2:L2.setBackgroundColor(Color.GREEN);ms.L2=255;break;
-                case R.id.button_R2:R2.setBackgroundColor(Color.GREEN);ms.R2=255;break;
-                case R.id.buttonR3:R3.setBackgroundColor(Color.GREEN);ms.R3=1;break;
-                case R.id.buttonL3:L3.setBackgroundColor(Color.GREEN);ms.L3=1;break;
-                case R.id.buttonOption:OPkey.setBackgroundColor(Color.GREEN);ms.OPKEY=1;break;
-                case R.id.buttonShare:SHARE.setBackgroundColor(Color.GREEN);ms.SHARE=1;break;
+                case R.id.button_A: button_A.setBackground(getDrawable(R.drawable.pressed));ms.A=255;break;
+                case R.id.button_B: button_B.setBackground(getDrawable(R.drawable.pressed)); ms.B=255;break;
+                case R.id.Square: button_X.setBackground(getDrawable(R.drawable.pressed)); ms.X=255;break;
+                case R.id.Tri: button_Y.setBackground(getDrawable(R.drawable.pressed)); ms.Y=255;break;
+                case R.id.button_dUp: button_DUP.setBackground(getDrawable(R.drawable.pressed)); ms.Dpad_UP=255;break;
+                case R.id.button_Ddown: button_DDOWN.setBackground(getDrawable(R.drawable.pressed)); ms.Dpad_Down=255;break;
+                case R.id.button_Dleft: button_DLEFT.setBackground(getDrawable(R.drawable.pressed)); ms.Dpad_Left=255;break;
+                case R.id.button_Dright:button_DRight.setBackground(getDrawable(R.drawable.pressed)); ms.Dpad_Right=255;break;
+                case R.id.button_PLUS:button_PLUS.setBackground(getDrawable(R.drawable.pressed)); ms.R1=255;break;
+                case R.id.button_DEDUCE:button_DEDUCE.setBackground(getDrawable(R.drawable.pressed)); ms.L1=255;break;
+                case R.id.button_home:BUTTON_home.setBackground(getDrawable(R.drawable.pressed));ms.PS=1;break;
+                case R.id.button_L2:L2.setBackground(getDrawable(R.drawable.pressed));ms.L2=255;break;
+                case R.id.button_R2:R2.setBackground(getDrawable(R.drawable.pressed));ms.R2=255;break;
+                case R.id.buttonR3:R3.setBackground(getDrawable(R.drawable.pressed));ms.R3=1;break;
+                case R.id.buttonL3:L3.setBackground(getDrawable(R.drawable.pressed));ms.L3=1;break;
+                case R.id.buttonOption:OPkey.setBackground(getDrawable(R.drawable.pressed));ms.OPKEY=1;break;
+                case R.id.buttonShare:SHARE.setBackground(getDrawable(R.drawable.pressed));ms.SHARE=1;break;
             }
         }
         else if( motionEvent.getAction() == MotionEvent.ACTION_UP){
+            view.animate().scaleX(1).scaleY(1).setDuration(100).start();
+
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY_RELEASE);
             switch (view.getId()){
-                case R.id.button_A: button_A.setBackgroundColor(Color.parseColor("#497367"));ms.A=0;break;
-                case R.id.button_B: button_B.setBackgroundColor(Color.parseColor("#497367")); ms.B=0;break;
-                case R.id.Square: button_X.setBackgroundColor(Color.parseColor("#497367")); ms.X=0;break;
-                case R.id.Tri: button_Y.setBackgroundColor(Color.parseColor("#497367")); ms.Y=0;break;
-                case R.id.button_dUp: button_DUP.setBackgroundColor(Color.parseColor("#497367")); ms.Dpad_UP=0;break;
-                case R.id.button_Ddown: button_DDOWN.setBackgroundColor(Color.parseColor("#497367")); ms.Dpad_Down=0;break;
-                case R.id.button_Dleft: button_DLEFT.setBackgroundColor(Color.parseColor("#497367")); ms.Dpad_Left=0;break;
-                case R.id.button_Dright: button_DRight.setBackgroundColor(Color.parseColor("#497367")); ms.Dpad_Right=0;break;
-                case R.id.button_PLUS:button_PLUS.setBackgroundColor(Color.parseColor("#497367")); ms.R1=0;break;
-                case R.id.button_DEDUCE:button_DEDUCE.setBackgroundColor(Color.parseColor("#497367")); ms.L1=0;break;
-                case R.id.button_home:BUTTON_home.setBackgroundColor(Color.parseColor("#497367"));ms.PS=0;break;
-                case R.id.button_L2:L2.setBackgroundColor(Color.parseColor("#497367"));ms.L2=0;break;
-                case R.id.button_R2:R2.setBackgroundColor(Color.parseColor("#497367"));ms.R2=0;break;
-                case R.id.buttonR3:R3.setBackgroundColor(Color.parseColor("#497367"));ms.R3=0;break;
-                case R.id.buttonL3:L3.setBackgroundColor(Color.parseColor("#497367"));ms.L3=0;break;
-                case R.id.buttonOption:OPkey.setBackgroundColor(Color.parseColor("#497367"));ms.OPKEY=0;break;
-                case R.id.buttonShare:SHARE.setBackgroundColor(Color.parseColor("#497367"));ms.SHARE=0;break;
+                case R.id.button_A: button_A.setBackground(getDrawable(R.drawable.unpress));ms.A=0;break;
+                case R.id.button_B: button_B.setBackground(getDrawable(R.drawable.unpress)); ms.B=0;break;
+                case R.id.Square: button_X.setBackground(getDrawable(R.drawable.unpress)); ms.X=0;break;
+                case R.id.Tri: button_Y.setBackground(getDrawable(R.drawable.unpress)); ms.Y=0;break;
+                case R.id.button_dUp: button_DUP.setBackground(getDrawable(R.drawable.unpress)); ms.Dpad_UP=0;break;
+                case R.id.button_Ddown: button_DDOWN.setBackground(getDrawable(R.drawable.unpress)); ms.Dpad_Down=0;break;
+                case R.id.button_Dleft: button_DLEFT.setBackground(getDrawable(R.drawable.unpress)); ms.Dpad_Left=0;break;
+                case R.id.button_Dright: button_DRight.setBackground(getDrawable(R.drawable.unpress)); ms.Dpad_Right=0;break;
+                case R.id.button_PLUS:button_PLUS.setBackground(getDrawable(R.drawable.unpress)); ms.R1=0;break;
+                case R.id.button_DEDUCE:button_DEDUCE.setBackground(getDrawable(R.drawable.unpress)); ms.L1=0;break;
+                case R.id.button_home:BUTTON_home.setBackground(getDrawable(R.drawable.unpress));ms.PS=0;break;
+                case R.id.button_L2:L2.setBackground(getDrawable(R.drawable.unpress));ms.L2=0;break;
+                case R.id.button_R2:R2.setBackground(getDrawable(R.drawable.unpress));ms.R2=0;break;
+                case R.id.buttonR3:R3.setBackground(getDrawable(R.drawable.unpress));ms.R3=0;break;
+                case R.id.buttonL3:L3.setBackground(getDrawable(R.drawable.unpress));ms.L3=0;break;
+                case R.id.buttonOption:OPkey.setBackground(getDrawable(R.drawable.unpress));ms.OPKEY=0;break;
+                case R.id.buttonShare:SHARE.setBackground(getDrawable(R.drawable.unpress));ms.SHARE=0;break;
             }
         }
         }
         return false;
     }
+    Timer timerx = new Timer();
+    long lasttime = 0;
 
     @Override
     public void onClick(View view) {
-
-        if(view.getId()==R.id.Button_touchlock){
-            getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.CONFIRM);
-            if(locked==true){
-                Touch.setText("LOCK");
-                Sensitive.setVisibility(View.VISIBLE);
-                findViewById(R.id.LOCK).setVisibility(View.INVISIBLE);
-                findViewById(R.id.editmode).setVisibility(View.VISIBLE);
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            }else{
-                Touch.setText("UNLOCK");
-                Sensitive.setVisibility(View.INVISIBLE);
-                findViewById(R.id.LOCK).setVisibility(View.VISIBLE);
-                findViewById(R.id.editmode).setVisibility(View.INVISIBLE);
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if(view.getId()==R.id.LOCK){
+            if(locked){
+//                getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+//                Touch.setText("LOCK");
+//                ImageView backg=findViewById(R.id.imageView);
+//                Animation alphaAnimation = new AlphaAnimation(1f, 0f);
+//                alphaAnimation.setDuration(100);//设置动画持续时间为500毫秒
+//                alphaAnimation.setFillAfter(false);//设置动画结束后保持当前的位置（即不返回到动画开始前的位置）
+//                backg.setAnimation(alphaAnimation);
+//                backg.setVisibility(View.INVISIBLE);
+//                timerx.cancel();
+//                ConstraintLayout mview= findViewById(R.id.main);
+//                mview.scrollTo(0,0);
+//                Paint paint = new Paint();
+//                ColorMatrix cm = new ColorMatrix();
+//                cm.setSaturation(1);
+//                paint.setColorFilter(new ColorMatrixColorFilter(cm));
+//                getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
+//                findViewById(R.id.sensitivelay).setVisibility(View.VISIBLE);
+//                findViewById(R.id.LOCK).startAnimation(alphaAnimation);
+//                findViewById(R.id.LOCK).setVisibility(View.INVISIBLE);
+//
+//                findViewById(R.id.editmode).setVisibility(View.VISIBLE);
+//                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//                locked=!locked;
             }
-            locked=!locked;
         }
+        if(view.getId()==R.id.your_dialog_button){
+            SharedPreferences userInfo = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
+            SharedPreferences.Editor editor = userInfo.edit();//获取Editor
+            yourDialog.cancel();
+            editor.putFloat("sensisavin", accSensitivity);
+             editor.commit();
+            Toast.makeText(MainActivity.this,"Sensitive has saved", Toast.LENGTH_LONG).show();
 
+        }
+        if(view.getId()==R.id.Button_touchlock){
+
+            if(locked==true){
+
+            }else{
+                getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+
+                //锁状态
+                Touch.setText("UNLOCK");
+                ImageView backg=findViewById(R.id.imageView);
+                Button lockbtn=findViewById(R.id.Button_touchlock);
+
+                View viewx = getWindow().getDecorView();
+                Bitmap bitmap2 = Bitmap.createBitmap(viewx.getWidth(), viewx.getHeight()+80, Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas();
+                canvas.setBitmap(bitmap2);
+                viewx.draw(canvas);
+                bitmap2=blur(bitmap2,25);
+                Animation alphaAnimation = new AlphaAnimation(0f, 1f);
+                alphaAnimation.setDuration(100);//设置动画持续时间为500毫秒
+                alphaAnimation.setFillAfter(false);//设置动画结束后保持当前的位置（即不返回到动画开始前的位置）
+                backg.setAnimation(alphaAnimation);
+                backg.setImageBitmap(bitmap2);
+                backg.setVisibility(View.VISIBLE);
+                timerx=new Timer();
+                TimerTask timertask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        Message message = new Message();
+                        long currentTime = System.currentTimeMillis();
+                        if (currentTime-lasttime>20000){
+                            lasttime = currentTime;
+                            message.what = 4;
+                        }else if(currentTime-lasttime>15000){
+                            message.what = 3;
+                        }else if(currentTime-lasttime>10000){
+                            message.what = 2;
+                        }
+                        else if(currentTime-lasttime>5000){
+                            message.what = 1;
+                        }
+                        handler.sendMessage(message);
+                    }
+                };
+                timerx.schedule(timertask,1000,5000);
+                Paint paint = new Paint();
+                ColorMatrix cm = new ColorMatrix();
+                cm.setSaturation(1);
+                paint.setColorFilter(new ColorMatrixColorFilter(cm));
+                getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
+                findViewById(R.id.editmode).setVisibility(View.INVISIBLE);
+                findViewById(R.id.LOCK).setVisibility(View.VISIBLE);
+                findViewById(R.id.LOCK).startAnimation(alphaAnimation);
+                findViewById(R.id.sensitivelay).setVisibility(View.INVISIBLE);
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                locked=!locked;
+            }
+
+        }
         if(isEditMode) {
             switch (view.getId()) {
                 case R.id.button_A:Inputbox(button_A,"ButtonA");break;
@@ -315,17 +445,31 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             }
         }
     }
+
+    private Bitmap blur(Bitmap bmp, @IntRange(from = 1, to = 25) int radius) {
+        RenderScript rs = RenderScript.create(this);
+        Allocation allocFromBmp = Allocation.createFromBitmap(rs, bmp);
+        ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(rs, allocFromBmp.getElement());
+        blur.setInput(allocFromBmp);
+        blur.setRadius(radius);
+        blur.forEach(allocFromBmp);
+        allocFromBmp.copyTo(bmp);
+        rs.destroy();
+
+        return bmp;
+    }
+
     @Override
     public boolean onKeyDown (int keyCode, KeyEvent event) {
         getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
         switch (keyCode) {
 // 音量减小
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                button_A.setBackgroundColor(Color.GREEN);ms.A=255;
+                button_A.setBackground(getDrawable(R.drawable.pressed));ms.A=255;
                 return true;
 // 音量增大
             case KeyEvent.KEYCODE_VOLUME_UP:
-                button_B.setBackgroundColor(Color.GREEN); ms.B=255;
+                button_B.setBackground(getDrawable(R.drawable.pressed)); ms.B=255;
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if(locked){
@@ -338,10 +482,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY_RELEASE);
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                button_A.setBackgroundColor(Color.parseColor("#497367"));ms.A=0;
+                button_A.setBackground(getDrawable(R.drawable.unpress));ms.A=0;
                 return true;
             case KeyEvent.KEYCODE_VOLUME_UP:
-                button_B.setBackgroundColor(Color.parseColor("#497367")); ms.B=0;
+                button_B.setBackground(getDrawable(R.drawable.unpress)); ms.B=0;
                 return true;
         }
         return super.onKeyUp (keyCode, event);
@@ -394,7 +538,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private void Inputbox(Button mbutton,String Buttonname){
         final EditText inputServer = new EditText(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Input Button Text").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)
+        builder.setTitle("Input Button Text").setIcon(R.drawable.ic_editmode).setView(inputServer)
                 .setNegativeButton("Cancel", null);
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
@@ -436,5 +580,70 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             return;
         }
         mbutton.setText(text);
+    }
+    private View Lightlayout;
+    private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.sensitivelay:
+                    yourDialog.show();
+                    break;
+            }
+            return true;
+        }
+    };
+    //oled防烧代码
+    @SuppressLint("HandlerLeak")
+    private final Handler handler = new Handler(){
+        public void handleMessage(Message message){
+            Random r = new Random();
+            ConstraintLayout mview= findViewById(R.id.main);
+            switch (message.what){
+                case 1:
+                    mview.scrollTo( r.nextInt(18)+3,0);
+                    break;
+                case 2:
+                    mview.scrollTo(0,r.nextInt(18)+3);
+                    break;
+                case 3:
+                    mview.scrollTo( r.nextInt(21) - 20,0);
+                    break;
+                case 4:
+                    mview.scrollTo(0,r.nextInt(21) - 20);
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public boolean onLongClick(View view) {
+        if(view.getId()==R.id.LOCK){
+            if(locked){
+                getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+                Touch.setText("LOCK");
+                ImageView backg=findViewById(R.id.imageView);
+                Animation alphaAnimation = new AlphaAnimation(1f, 0f);
+                alphaAnimation.setDuration(100);//设置动画持续时间为500毫秒
+                alphaAnimation.setFillAfter(false);//设置动画结束后保持当前的位置（即不返回到动画开始前的位置）
+                backg.setAnimation(alphaAnimation);
+                backg.setVisibility(View.INVISIBLE);
+                timerx.cancel();
+                ConstraintLayout mview= findViewById(R.id.main);
+                mview.scrollTo(0,0);
+                Paint paint = new Paint();
+                ColorMatrix cm = new ColorMatrix();
+                cm.setSaturation(1);
+                paint.setColorFilter(new ColorMatrixColorFilter(cm));
+                getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
+                findViewById(R.id.sensitivelay).setVisibility(View.VISIBLE);
+                findViewById(R.id.LOCK).startAnimation(alphaAnimation);
+                findViewById(R.id.LOCK).setVisibility(View.INVISIBLE);
+                findViewById(R.id.editmode).setVisibility(View.VISIBLE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                locked=!locked;
+            }
+        }
+        return false;
     }
 }

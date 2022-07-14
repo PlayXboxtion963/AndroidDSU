@@ -3,11 +3,21 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/Spacialbutton.xml" value="0.255" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/cicrleRED.xml" value="0.1785" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/fullscr.xml" value="0.249" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/ic_editmode.xml" value="0.1955" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/ic_senset.xml" value="0.1955" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/line.xml" value="0.2655" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/spicalunpress.xml" value="0.121" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout-long/acitvity_main.xml" value="0.10689890710382513" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout-long/activity_main.xml" value="0.25" />
-        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/activity_main.xml" value="0.16" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/activity_main.xml" value="0.18" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/jj.xml" value="0.1" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/lightseekbar.xml" value="0.1" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/senseseekbar.xml" value="0.2" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/switch_item.xml" value="0.15756578947368421" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/menu/menu.xml" value="0.25" />
       </map>
     </option>
   </component>

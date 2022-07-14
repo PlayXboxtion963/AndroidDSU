@@ -95,9 +95,11 @@ public class Packet {
             for(int i=0;i!=12;i++){
                 mout[40+i]=0;
             }
-            long motion=System.currentTimeMillis();
+            long motion=System.currentTimeMillis()*1000;
             for(int i=0;i!=8;i++){
-                mout[52+i]=LongToBytes(motion)[i];
+               // mout[52+i]=LongToBytes(motion)[i];
+                mout[52+i]= (byte) ((motion>>i*8)&0xFF);
+
             }
             float buffer = mcontrol.accelX;
             ByteBuffer bbuf = ByteBuffer.allocate(4);
@@ -291,12 +293,5 @@ public class Packet {
         }
         return a;
     }
-    public static byte[] LongToBytes(long values) {
-        byte[] buffer = new byte[8];
-        for (int i = 0; i < 8; i++) {
-            int offset = 64 - (i + 1) * 8;
-            buffer[i] = (byte) ((values >> offset) & 0xff);
-        }
-        return buffer;
-    }
+
 }

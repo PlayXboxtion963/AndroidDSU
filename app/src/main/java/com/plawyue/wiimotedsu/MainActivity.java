@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
@@ -23,8 +24,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.icu.text.CompactDecimalFormat;
+import android.media.Image;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Handler;
@@ -33,6 +37,7 @@ import android.renderscript.Allocation;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -40,6 +45,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -55,6 +61,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
@@ -73,10 +80,14 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     Button L3,R3,OPkey,SHARE,Colorx;
     Boolean locked=false;
     Button button_A,button_B,button_DUP,button_DDOWN,button_DLEFT,button_DRight,button_PLUS,button_DEDUCE,BUTTON_home,L2,R2,Touch,button_X,button_Y;
-    float accSensitivity=0.9f;
+    float Gyrosensitvity=0.9f;
+    float Accsensitvity=1f;
     Boolean isEditMode=false;
     Dialog yourDialog;
+    Dialog EdittextDialog;
     SeekBar yourDialogSeekBar;
+    EditText Editbtntext;
+    SeekBar accseekbar;
     static float METER_PER_SECOND_SQUARED_TO_G = (float) 9.8066;
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -85,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         Toolbar mtoorbar=findViewById(R.id.toolbar);
         mtoorbar.setOnMenuItemClickListener(onMenuItemClick);
         mtoorbar.inflateMenu(R.menu.menu);
+        mtoorbar.setFitsSystemWindows(true);
         registerReceiver(mBatInfoReveiver, new IntentFilter(
                 Intent.ACTION_BATTERY_CHANGED));
         Switch editmodeswitch=findViewById(R.id.editmode);
@@ -95,8 +107,29 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         View layout = inflater.inflate(R.layout.senseseekbar, (ViewGroup) findViewById(R.id.elementseek));
         Button yourDialogButton = (Button) layout.findViewById(R.id.your_dialog_button);
         yourDialogSeekBar = layout.findViewById(R.id.your_dialog_seekbar);
+        accseekbar=layout.findViewById(R.id.seekBar);
+        TextView acctext = layout.findViewById(R.id.acctext);
+        accseekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                layout.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
+                acctext.setText("Accelerometer sensitive set as:" + i/10.0);
+                Accsensitvity= (float) (i/10.0);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         yourDialog = new Dialog(this);
         yourDialog.setContentView(layout);
+        yourDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         TextView lighttext = layout.findViewById(R.id.lighttext);
         SeekBar.OnSeekBarChangeListener yourSeekBarListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -114,13 +147,30 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             public void onProgressChanged(SeekBar seekBark, int progress, boolean fromUser) {
                 //add code here
                 layout.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
-                lighttext.setText("sensitive set as:" + progress/10.0);
-                accSensitivity= (float) (progress/10.0);
+                lighttext.setText("Gyroscope sensitive set as:" + progress/10.0);
+                Gyrosensitvity= (float) (progress/10.0);
             }
         };
         yourDialogButton.setOnClickListener(this);
         yourDialogSeekBar.setOnSeekBarChangeListener(yourSeekBarListener);
-        Lightlayout = layout;
+        yourDialog.setCanceledOnTouchOutside(false);
+        yourDialog.setCancelable(false);
+
+
+        LayoutInflater inflater2 = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View layout2 = inflater2.inflate(R.layout.editlayout, (ViewGroup) findViewById(R.id.elementseek2));
+
+        EdittextDialog = new Dialog(this);
+        EdittextDialog.setContentView(layout2);
+        EdittextDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        Button yourDialogButton2 = (Button) layout2.findViewById(R.id.okbtn);
+        Button canclebtn=layout2.findViewById(R.id.cancelbtn);
+        canclebtn.setOnClickListener(this);
+        Editbtntext=layout2.findViewById(R.id.btncontent);
+        yourDialogButton2.setOnClickListener(this);
+        EdittextDialog.setCanceledOnTouchOutside(false);
+        EdittextDialog.setCancelable(false);
+
         TextView Locktips=findViewById(R.id.LOCK);
         Locktips.setOnClickListener(this);
         Locktips.setOnLongClickListener(this);
@@ -186,8 +236,14 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             editor.putFloat("sensisavin",0.9F);
             editor.commit();
         }
-        accSensitivity=userInfo.getFloat("sensisavin",0.9F);
-        yourDialogSeekBar.setProgress((int) (accSensitivity*10));
+        if(userInfo.contains("accsensisavin")==false){
+            editor.putFloat("accsensisavin",1F);
+            editor.commit();
+        }
+        Accsensitvity=userInfo.getFloat("accsensisavin",1f);
+        Gyrosensitvity=userInfo.getFloat("sensisavin",0.9F);
+        accseekbar.setProgress((int)(Accsensitvity*10));
+        yourDialogSeekBar.setProgress((int) (Gyrosensitvity*10));
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         int ipAddress = wifiInfo.getIpAddress();
@@ -215,9 +271,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             public void onSensorChanged(SensorEvent event) {
                 Boolean conver=true;
                 Boolean noconver=false;
-                float accX = -accSensitivity * event.values[2] * METER_PER_SECOND_SQUARED_TO_G / 100;
-                float accY =  -accSensitivity * event.values[0] * METER_PER_SECOND_SQUARED_TO_G / 100;
-                float accZ =accSensitivity * event.values[1] * METER_PER_SECOND_SQUARED_TO_G / 100;
+                float accX = -Accsensitvity*event.values[2] * METER_PER_SECOND_SQUARED_TO_G / 100;
+                float accY =  -Accsensitvity*event.values[0] * METER_PER_SECOND_SQUARED_TO_G / 100;
+                float accZ =Accsensitvity*event.values[1] * METER_PER_SECOND_SQUARED_TO_G / 100;
                 DecimalFormat df = new DecimalFormat("#.00");
                 ms.accX= Float.parseFloat(df.format(accY));
                 ms.accY=Float.parseFloat(df.format(accX));
@@ -230,9 +286,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
 
-                ms.gyroR= (float) (radToDeg(sensorEvent.values[1]) * 0.8);
-                ms.gyroY= (float) (-radToDeg(sensorEvent.values[2]) * 0.8);
-                ms.gyroP= (float) (radToDeg(sensorEvent.values[0]) * 0.8);
+                ms.gyroR= (float) (radToDeg(sensorEvent.values[1]) * Gyrosensitvity);
+                ms.gyroY= (float) (-radToDeg(sensorEvent.values[2]) *Gyrosensitvity);
+                ms.gyroP= (float) (radToDeg(sensorEvent.values[0]) * Gyrosensitvity);
             }
             double radToDeg(double radians) {
                 return radians * 180 / PI;
@@ -247,9 +303,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(gyrolinster,
                 sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-                SensorManager.SENSOR_DELAY_UI);
+                SensorManager.SENSOR_DELAY_GAME);
 
         loadbutton();
+        getWindow().setNavigationBarColor(ContextCompat.getColor(MainActivity.this, R.color.background));
 
     }
     public static boolean isNumeric(String str){
@@ -263,6 +320,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
 
     }
+
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         if(view.getId()==R.id.LOCK&&motionEvent.getAction() == MotionEvent.ACTION_DOWN){
@@ -276,6 +334,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
             view.animate().scaleX(0.9f).scaleY(0.9f).setDuration(100).start();
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
             switch (view.getId()){
                 case R.id.button_A: button_A.setBackground(getDrawable(R.drawable.pressed));ms.A=255;break;
                 case R.id.button_B: button_B.setBackground(getDrawable(R.drawable.pressed)); ms.B=255;break;
@@ -298,7 +357,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         }
         else if( motionEvent.getAction() == MotionEvent.ACTION_UP){
             view.animate().scaleX(1).scaleY(1).setDuration(100).start();
-
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY_RELEASE);
             switch (view.getId()){
                 case R.id.button_A: button_A.setBackground(getDrawable(R.drawable.unpress));ms.A=0;break;
@@ -325,47 +383,40 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     }
     Timer timerx = new Timer();
     long lasttime = 0;
+    public static Bitmap mergeBitmap(Bitmap backBitmap, Bitmap frontBitmap) {
+
+        if (backBitmap == null || backBitmap.isRecycled()
+                || frontBitmap == null || frontBitmap.isRecycled()) {
+            return null;
+        }
+        Bitmap bitmap = backBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(bitmap);
+        Rect baseRect  = new Rect(0, 0, backBitmap.getWidth(), backBitmap.getHeight());
+        Rect frontRect = new Rect(0, 0, frontBitmap.getWidth(), frontBitmap.getHeight());
+        canvas.drawBitmap(frontBitmap, frontRect, baseRect, null);
+        return bitmap;
+    }
+
+
 
     @Override
     public void onClick(View view) {
-        if(view.getId()==R.id.LOCK){
-            if(locked){
-//                getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-//                Touch.setText("LOCK");
-//                ImageView backg=findViewById(R.id.imageView);
-//                Animation alphaAnimation = new AlphaAnimation(1f, 0f);
-//                alphaAnimation.setDuration(100);//设置动画持续时间为500毫秒
-//                alphaAnimation.setFillAfter(false);//设置动画结束后保持当前的位置（即不返回到动画开始前的位置）
-//                backg.setAnimation(alphaAnimation);
-//                backg.setVisibility(View.INVISIBLE);
-//                timerx.cancel();
-//                ConstraintLayout mview= findViewById(R.id.main);
-//                mview.scrollTo(0,0);
-//                Paint paint = new Paint();
-//                ColorMatrix cm = new ColorMatrix();
-//                cm.setSaturation(1);
-//                paint.setColorFilter(new ColorMatrixColorFilter(cm));
-//                getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
-//                findViewById(R.id.sensitivelay).setVisibility(View.VISIBLE);
-//                findViewById(R.id.LOCK).startAnimation(alphaAnimation);
-//                findViewById(R.id.LOCK).setVisibility(View.INVISIBLE);
-//
-//                findViewById(R.id.editmode).setVisibility(View.VISIBLE);
-//                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-//                locked=!locked;
-            }
-        }
         if(view.getId()==R.id.your_dialog_button){
+            getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.CONFIRM);
             SharedPreferences userInfo = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
             SharedPreferences.Editor editor = userInfo.edit();//获取Editor
+            ImageView backg=findViewById(R.id.imageView);
+            backg.setVisibility(View.INVISIBLE);
             yourDialog.cancel();
-            editor.putFloat("sensisavin", accSensitivity);
+
+            editor.putFloat("sensisavin", Gyrosensitvity);
+            editor.putFloat("accsensisavin",Accsensitvity);
              editor.commit();
+
             Toast.makeText(MainActivity.this,"Sensitive has saved", Toast.LENGTH_LONG).show();
 
         }
         if(view.getId()==R.id.Button_touchlock){
-
             if(locked==true){
 
             }else{
@@ -376,18 +427,23 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 ImageView backg=findViewById(R.id.imageView);
                 Button lockbtn=findViewById(R.id.Button_touchlock);
 
-                View viewx = getWindow().getDecorView();
-                Bitmap bitmap2 = Bitmap.createBitmap(viewx.getWidth(), viewx.getHeight()+80, Bitmap.Config.ARGB_8888);
+                View viewx = findViewById(R.id.linearLayout);
+                Bitmap bitmap2 = Bitmap.createBitmap(viewx.getWidth(), viewx.getHeight(), Bitmap.Config.ARGB_8888);
+                Bitmap bitmap=Bitmap.createBitmap(viewx.getWidth(),viewx.getHeight(),Bitmap.Config.ARGB_8888);
+                Canvas canvasback=new Canvas(bitmap);
+                canvasback.drawColor(ContextCompat.getColor(MainActivity.this, R.color.background));
                 Canvas canvas = new Canvas();
                 canvas.setBitmap(bitmap2);
                 viewx.draw(canvas);
                 bitmap2=blur(bitmap2,25);
+                bitmap2=mergeBitmap(bitmap,bitmap2);
                 Animation alphaAnimation = new AlphaAnimation(0f, 1f);
                 alphaAnimation.setDuration(100);//设置动画持续时间为500毫秒
                 alphaAnimation.setFillAfter(false);//设置动画结束后保持当前的位置（即不返回到动画开始前的位置）
                 backg.setAnimation(alphaAnimation);
                 backg.setImageBitmap(bitmap2);
                 backg.setVisibility(View.VISIBLE);
+
                 timerx=new Timer();
                 TimerTask timertask = new TimerTask() {
                     @Override
@@ -418,10 +474,29 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 findViewById(R.id.LOCK).setVisibility(View.VISIBLE);
                 findViewById(R.id.LOCK).startAnimation(alphaAnimation);
                 findViewById(R.id.sensitivelay).setVisibility(View.INVISIBLE);
+
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 locked=!locked;
             }
 
+        }
+        if(view.getId()==R.id.okbtn){
+            String result =Editbtntext.getText().toString();
+            buttontemp.setText(result);
+            SharedPreferences userInfo = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
+            SharedPreferences.Editor editor = userInfo.edit();//获取Editor
+            editor.putString(Buttonnamex,result);
+            editor.commit();
+            ImageView backg=findViewById(R.id.imageView);
+            backg.setVisibility(View.INVISIBLE);
+            EdittextDialog.cancel();
+            getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+        }
+        if(view.getId()==R.id.cancelbtn){
+            ImageView backg=findViewById(R.id.imageView);
+            backg.setVisibility(View.INVISIBLE);
+            EdittextDialog.cancel();
+            getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
         }
         if(isEditMode) {
             switch (view.getId()) {
@@ -455,7 +530,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         blur.forEach(allocFromBmp);
         allocFromBmp.copyTo(bmp);
         rs.destroy();
-
         return bmp;
     }
 
@@ -525,7 +599,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         }
     };
 
-
+    private Button buttontemp;
+    private String Buttonnamex;
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         if(b){
@@ -536,21 +611,28 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         }
     }
     private void Inputbox(Button mbutton,String Buttonname){
-        final EditText inputServer = new EditText(this);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Input Button Text").setIcon(R.drawable.ic_editmode).setView(inputServer)
-                .setNegativeButton("Cancel", null);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                String result =inputServer.getText().toString();
-                mbutton.setText(result);
-                SharedPreferences userInfo = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
-                SharedPreferences.Editor editor = userInfo.edit();//获取Editor
-                editor.putString(Buttonname,result);
-                editor.commit();
-            }
-        });
-        builder.show();
+        EdittextDialog.show();
+        View viewx = findViewById(R.id.linearLayout);
+        Bitmap bitmap2 = Bitmap.createBitmap(viewx.getWidth(), viewx.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap=Bitmap.createBitmap(viewx.getWidth(),viewx.getHeight(),Bitmap.Config.ARGB_8888);
+        Canvas canvasback=new Canvas(bitmap);
+        canvasback.drawColor(ContextCompat.getColor(MainActivity.this, R.color.background));
+        Canvas canvas = new Canvas();
+        canvas.setBitmap(bitmap2);
+        viewx.draw(canvas);
+        bitmap2=blur(bitmap2,25);
+        bitmap2=mergeBitmap(bitmap,bitmap2);
+        Animation alphaAnimation = new AlphaAnimation(0f, 1f);
+        alphaAnimation.setDuration(100);//设置动画持续时间为500毫秒
+        alphaAnimation.setFillAfter(false);//设置动画结束后保持当前的位置（即不返回到动画开始前的位置）
+        ImageView backg=findViewById(R.id.imageView);
+        backg.setAnimation(alphaAnimation);
+        backg.setImageBitmap(bitmap2);
+        backg.setVisibility(View.VISIBLE);
+        Editbtntext.setText(mbutton.getText());
+        buttontemp=mbutton;
+        Buttonnamex=Buttonname;
+
     }
     private void loadbutton(){
         loadbuttontext(button_A,"ButtonA");
@@ -581,13 +663,53 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         }
         mbutton.setText(text);
     }
-    private View Lightlayout;
+    public static int getHeight(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        display.getMetrics(dm);
+        int height = dm.heightPixels;
+        return height;
+    }
+    public static int getRealHeight(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            display.getRealMetrics(dm);
+        } else {
+            display.getMetrics(dm);
+        }
+        int realHeight = dm.heightPixels;
+        return realHeight;
+    }
+
+
     private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
                 case R.id.sensitivelay:
+                    getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.CONFIRM);
                     yourDialog.show();
+
+                    View viewx = findViewById(R.id.linearLayout);
+                    Bitmap bitmap2 = Bitmap.createBitmap(viewx.getWidth(), viewx.getHeight(), Bitmap.Config.ARGB_8888);
+                    Bitmap bitmap=Bitmap.createBitmap(viewx.getWidth(),viewx.getHeight(),Bitmap.Config.ARGB_8888);
+                    Canvas canvasback=new Canvas(bitmap);
+                    canvasback.drawColor(ContextCompat.getColor(MainActivity.this, R.color.background));
+                    Canvas canvas = new Canvas();
+                    canvas.setBitmap(bitmap2);
+                    viewx.draw(canvas);
+                    bitmap2=blur(bitmap2,25);
+                    bitmap2=mergeBitmap(bitmap,bitmap2);
+                    Animation alphaAnimation = new AlphaAnimation(0f, 1f);
+                    alphaAnimation.setDuration(100);//设置动画持续时间为500毫秒
+                    alphaAnimation.setFillAfter(false);//设置动画结束后保持当前的位置（即不返回到动画开始前的位置）
+                    ImageView backg=findViewById(R.id.imageView);
+                    backg.setAnimation(alphaAnimation);
+                    backg.setImageBitmap(bitmap2);
+                    backg.setVisibility(View.VISIBLE);
                     break;
             }
             return true;
@@ -640,6 +762,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 findViewById(R.id.LOCK).startAnimation(alphaAnimation);
                 findViewById(R.id.LOCK).setVisibility(View.INVISIBLE);
                 findViewById(R.id.editmode).setVisibility(View.VISIBLE);
+
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 locked=!locked;
             }

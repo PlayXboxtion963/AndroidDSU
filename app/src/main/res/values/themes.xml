@@ -16,8 +16,8 @@
         <!-- Customize your theme here. -->
     </style>
     <style name="MyEditText" parent="Theme.AppCompat.Light">
-        <item name="colorControlNormal">@color/white</item>
-        <item name="colorControlActivated">@android:color/holo_orange_dark</item>
+        <item name="colorControlNormal">@color/buttonx</item>
+        <item name="colorControlActivated">@color/buttonx</item>
     </style>
     <style name="scstyle" parent="Theme.AppCompat.Light">
         <!--开启时的颜色-->

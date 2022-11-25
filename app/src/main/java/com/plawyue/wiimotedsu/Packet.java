@@ -72,8 +72,8 @@ public class Packet {
             for(int i=0;i!=4;i++){
                 mout[16+i]=Int2Bytes_LE(this.counter)[0+i];
             }
-            mout[20] =(byte)KeyToBitmask(mcontrol); //DPAD left, down, right, up, options,R3, L3 ,share
-            mout[21] = 0 ;//# X, A, B, Y, R1, L1, R2, L2
+            mout[20] =(byte)KeyToBitmask_ONE(mcontrol); //DPAD left, down, right, up, options,R3, L3 ,share
+            mout[21] =(byte)KeyToBitmask_TWO(mcontrol);//# X, A, B, Y, R1, L1, R2, L2
             mout[22] = (byte) mcontrol.PS  ;//# button.PS
             mout[23] = 0x0  ;//# button.touch
             mout[24] = 0x0 ; //# position.left.x
@@ -277,8 +277,20 @@ public class Packet {
             return str.substring(f, t);
         }
     }
-    public int KeyToBitmask(Controller mcontrol){
+    public int KeyToBitmask_ONE(Controller mcontrol){
         int a=00000000;
+        if(mcontrol.Dpad_Left==255){
+            a |= (1 << 7);
+        }
+        if(mcontrol.Dpad_Down==255){
+            a |= (1 << 6);
+        }
+        if(mcontrol.Dpad_Right==255){
+            a |= (1 << 5);
+        }
+        if(mcontrol.Dpad_UP==255){
+            a |= (1 << 4);
+        }
         if(mcontrol.Option==1){
             a |= (1 << 3);
         }
@@ -289,6 +301,34 @@ public class Packet {
             a |= (1 << 1);
         }
         if(mcontrol.Share==1){
+            a |= (1 << 0);
+        }
+        return a;
+    }
+    public int KeyToBitmask_TWO(Controller mcontrol){
+        int a=00000000;
+        if(mcontrol.Y==255){
+            a |= (1 << 7);
+        }
+        if(mcontrol.B==255){
+            a |= (1 << 6);
+        }
+        if(mcontrol.A==255){
+            a |= (1 << 5);
+        }
+        if(mcontrol.X==255){
+            a |= (1 << 4);
+        }
+        if(mcontrol.R1==255){
+            a |= (1 << 3);
+        }
+        if(mcontrol.L1==255){
+            a |= (1 << 2);
+        }
+        if(mcontrol.R2==255){
+            a |= (1 << 1);
+        }
+        if(mcontrol.L2==255){
             a |= (1 << 0);
         }
         return a;

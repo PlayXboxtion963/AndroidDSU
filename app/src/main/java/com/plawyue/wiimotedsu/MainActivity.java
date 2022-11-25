@@ -437,37 +437,44 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 viewx.draw(canvas);
                 bitmap2=blur(bitmap2,25);
                 bitmap2=mergeBitmap(bitmap,bitmap2);
+                bitmap2=handleImageEffect(bitmap2,0.2f);
+
+
                 Animation alphaAnimation = new AlphaAnimation(0f, 1f);
                 alphaAnimation.setDuration(100);//设置动画持续时间为500毫秒
                 alphaAnimation.setFillAfter(false);//设置动画结束后保持当前的位置（即不返回到动画开始前的位置）
                 backg.setAnimation(alphaAnimation);
                 backg.setImageBitmap(bitmap2);
                 backg.setVisibility(View.VISIBLE);
-
-                timerx=new Timer();
-                TimerTask timertask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        Message message = new Message();
-                        long currentTime = System.currentTimeMillis();
-                        if (currentTime-lasttime>20000){
-                            lasttime = currentTime;
-                            message.what = 4;
-                        }else if(currentTime-lasttime>15000){
-                            message.what = 3;
-                        }else if(currentTime-lasttime>10000){
-                            message.what = 2;
-                        }
-                        else if(currentTime-lasttime>5000){
-                            message.what = 1;
-                        }
-                        handler.sendMessage(message);
-                    }
-                };
-                timerx.schedule(timertask,1000,5000);
+                Window window =this.getWindow();
+/*如果之前是办透明模式，要加这一句需要取消半透明的Flag
+window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);*/
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                window.setStatusBarColor(Color.TRANSPARENT);
+//                timerx=new Timer();
+//                TimerTask timertask = new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        Message message = new Message();
+//                        long currentTime = System.currentTimeMillis();
+//                        if (currentTime-lasttime>20000){
+//                            lasttime = currentTime;
+//                            message.what = 4;
+//                        }else if(currentTime-lasttime>15000){
+//                            message.what = 3;
+//                        }else if(currentTime-lasttime>10000){
+//                            message.what = 2;
+//                        }
+//                        else if(currentTime-lasttime>5000){
+//                            message.what = 1;
+//                        }
+//                        handler.sendMessage(message);
+//                    }
+//                };
+//                timerx.schedule(timertask,1000,5000);
                 Paint paint = new Paint();
                 ColorMatrix cm = new ColorMatrix();
-                cm.setSaturation(1);
+                cm.setSaturation(0);
                 paint.setColorFilter(new ColorMatrixColorFilter(cm));
                 getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
                 findViewById(R.id.editmode).setVisibility(View.INVISIBLE);
@@ -498,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             EdittextDialog.cancel();
             getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
         }
-        if(isEditMode) {
+        if(isEditMode&&locked==false) {
             switch (view.getId()) {
                 case R.id.button_A:Inputbox(button_A,"ButtonA");break;
                 case R.id.button_B:Inputbox(button_B,"ButtonB");break;
@@ -605,6 +612,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         if(b){
             isEditMode=true;
+            Toast.makeText(this,"Enter Edit Mode",Toast.LENGTH_LONG).show();
         }else{
             isEditMode=false;
             Toast.makeText(this,"Button Text has saved",Toast.LENGTH_LONG).show();
@@ -769,4 +777,25 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         }
         return false;
     }
+    public static Bitmap handleImageEffect(Bitmap bitmap,float lum) {
+        //传进来的bitmap默认不能修改  所以再创建一个bm
+        Bitmap bm = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        //画布
+        Canvas canvas = new Canvas(bm);
+        //抗锯齿
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        //修改亮度
+        ColorMatrix lumMatrix = new ColorMatrix();
+        //r g b a    1 表示全不透明
+        lumMatrix.setScale(lum, lum, lum, 1);
+        //组合Matrix
+        ColorMatrix imageMatrix = new ColorMatrix();
+        imageMatrix.postConcat(lumMatrix);
+        //为画笔设置颜色过滤器
+        paint.setColorFilter(new ColorMatrixColorFilter(imageMatrix));
+        //在canvas上照着bitmap画
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        return bm;
+    }
+
 }

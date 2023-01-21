@@ -30,6 +30,8 @@ public class MontionServer {
     Boolean threadlock=false;
     Packet receivedPacket = new Packet();
     int cansendflag=0;
+    int left_stick_x,left_stick_y;
+    int right_stick_x,right_stick_y;
     Controller mcontrol = new Controller();
     public void start() throws InterruptedException {
         Thread.sleep(1000);
@@ -72,9 +74,13 @@ public class MontionServer {
                 mcontrol.Dpad_Down=Dpad_Down;
                 mcontrol.Dpad_Right=Dpad_Right;
                 mcontrol.battery=battery;
+                mcontrol.left_stick_y=left_stick_y;
+                mcontrol.left_stick_x=left_stick_x;
+                mcontrol.right_stick_y=right_stick_y;
+                mcontrol.right_stick_x=right_stick_x;
                 try {
                         socket.send(bytesztopack(receivedPacket.answer(mcontrol, 1), ip, port));
-                        Thread.sleep(20);
+                        Thread.sleep(10);
                 } catch (Exception exception) {
                 }
                 }

@@ -11,12 +11,16 @@
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/ic_cicr.xml" value="0.1955" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/ic_editmode.xml" value="0.1955" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/ic_gyro.xml" value="0.1945" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/ic_joystick.xml" value="0.255" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/ic_senset.xml" value="0.1955" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/line.xml" value="0.2655" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/pressed.xml" value="0.255" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/spicalunpress.xml" value="0.121" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/drawable/unpress.xml" value="0.255" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout-long/acitvity_main.xml" value="0.10689890710382513" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout-long/activity_main.xml" value="0.25" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/activity_main.xml" value="0.18" />
+        <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/activity_main2.xml" value="0.15756578947368421" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/editlayout.xml" value="0.16940789473684212" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/edittextbox.xml" value="0.16940789473684212" />
         <entry key="..\:/project/WIIMoteDSU/app/src/main/res/layout/jj.xml" value="0.1" />

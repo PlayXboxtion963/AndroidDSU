@@ -2,19 +2,30 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/joystick_sw"
+        android:orderInCategory="79"
+        android:title="JoyStick"
+        android:icon="@drawable/ic_joystick"
+        />
+    <item
         android:id="@+id/sensitivelay"
         android:orderInCategory="80"
-        android:title="Sensitive"
+        android:title="Sensitive Setting"
         android:icon="@drawable/ic_senset"
-        app:showAsAction="always" />
+       />
     <item
         android:id="@+id/app_bar_switch"
         android:orderInCategory="81"
-        android:title="editmode switch"
+        android:title="Editmode"
         android:icon="@drawable/ic_editmode"
-        app:actionLayout="@layout/switch_item"
-        app:showAsAction="always" />
+        />
 
+    <item
+        android:id="@+id/about_menu"
+        android:orderInCategory="82"
+        android:title="About"
+
+        />
 
 
 </menu>

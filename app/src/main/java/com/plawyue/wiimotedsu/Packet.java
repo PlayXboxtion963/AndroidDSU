@@ -2,6 +2,8 @@ package com.plawyue.wiimotedsu;
 
 
 
+import android.util.Log;
+
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -69,6 +71,11 @@ public class Packet {
             mout[14]= (byte) mcontrol.battery;
             mout[15]=1;
             this.counter+=1;
+            //counter=0;
+            if(counter>50000){
+                counter=0;
+            }
+            //Log.w("warning",String.valueOf(counter));
             for(int i=0;i!=4;i++){
                 mout[16+i]=Int2Bytes_LE(this.counter)[0+i];
             }
@@ -76,10 +83,10 @@ public class Packet {
             mout[21] =(byte)KeyToBitmask_TWO(mcontrol);//# X, A, B, Y, R1, L1, R2, L2
             mout[22] = (byte) mcontrol.PS  ;//# button.PS
             mout[23] = 0x0  ;//# button.touch
-            mout[24] = 0x0 ; //# position.left.x
-            mout[25] = 0x0 ;//# position.left.y
-            mout[26] = 0x0 ; //# position.right.x
-            mout[27] = 0x0 ; //# position.right.y
+            mout[24] =(byte) mcontrol.left_stick_x; //# position.left.x
+            mout[25] = (byte) mcontrol.left_stick_y;//# position.left.y
+            mout[26] = (byte) mcontrol.right_stick_x ; //# position.right.x
+            mout[27] =(byte) mcontrol.right_stick_y ; //# position.right.y
             mout[28] = (byte) mcontrol.Dpad_Left;//# DPAD left
             mout[29] = (byte) mcontrol.Dpad_Down ;//# DPAD down
             mout[30] = (byte) mcontrol.Dpad_Right  ;//# DPAD right

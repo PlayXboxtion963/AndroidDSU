@@ -47,14 +47,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -63,16 +67,19 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import com.shy.rockerview.MyRockerView;
+
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
+import java.time.Duration;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MainActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener, View.OnLongClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener, View.OnLongClickListener {
     private SensorManager sensorManager;
     private Sensor sensor;
     MontionServer ms=new MontionServer();
@@ -97,11 +104,16 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         mtoorbar.setOnMenuItemClickListener(onMenuItemClick);
         mtoorbar.inflateMenu(R.menu.menu);
         mtoorbar.setFitsSystemWindows(true);
+
         registerReceiver(mBatInfoReveiver, new IntentFilter(
                 Intent.ACTION_BATTERY_CHANGED));
-        Switch editmodeswitch=findViewById(R.id.editmode);
-        editmodeswitch.setOnCheckedChangeListener(this);
-
+//        Switch editmodeswitch=findViewById(R.id.editmode);
+//        editmodeswitch.setOnCheckedChangeListener(this);
+        Window window =this.getWindow();
+        /*如果之前是办透明模式，要加这一句需要取消半透明的Flag
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);*/
+        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        window.setStatusBarColor(Color.TRANSPARENT);
 
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.senseseekbar, (ViewGroup) findViewById(R.id.elementseek));
@@ -160,6 +172,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         LayoutInflater inflater2 = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
         View layout2 = inflater2.inflate(R.layout.editlayout, (ViewGroup) findViewById(R.id.elementseek2));
 
+        joystick_show();
+        ms.right_stick_x=128;
+        ms.left_stick_y=128;
+        ms.left_stick_x=128;
+        ms.right_stick_y=128;
         EdittextDialog = new Dialog(this);
         EdittextDialog.setContentView(layout2);
         EdittextDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -446,42 +463,18 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 backg.setAnimation(alphaAnimation);
                 backg.setImageBitmap(bitmap2);
                 backg.setVisibility(View.VISIBLE);
-                Window window =this.getWindow();
-/*如果之前是办透明模式，要加这一句需要取消半透明的Flag
-window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);*/
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-                window.setStatusBarColor(Color.TRANSPARENT);
-//                timerx=new Timer();
-//                TimerTask timertask = new TimerTask() {
-//                    @Override
-//                    public void run() {
-//                        Message message = new Message();
-//                        long currentTime = System.currentTimeMillis();
-//                        if (currentTime-lasttime>20000){
-//                            lasttime = currentTime;
-//                            message.what = 4;
-//                        }else if(currentTime-lasttime>15000){
-//                            message.what = 3;
-//                        }else if(currentTime-lasttime>10000){
-//                            message.what = 2;
-//                        }
-//                        else if(currentTime-lasttime>5000){
-//                            message.what = 1;
-//                        }
-//                        handler.sendMessage(message);
-//                    }
-//                };
-//                timerx.schedule(timertask,1000,5000);
+
                 Paint paint = new Paint();
                 ColorMatrix cm = new ColorMatrix();
                 cm.setSaturation(0);
                 paint.setColorFilter(new ColorMatrixColorFilter(cm));
                 getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
-                findViewById(R.id.editmode).setVisibility(View.INVISIBLE);
+//                findViewById(R.id.editmode).setVisibility(View.INVISIBLE);
                 findViewById(R.id.LOCK).setVisibility(View.VISIBLE);
                 findViewById(R.id.LOCK).startAnimation(alphaAnimation);
-                findViewById(R.id.sensitivelay).setVisibility(View.INVISIBLE);
-
+//                findViewById(R.id.sensitivelay).setVisibility(View.INVISIBLE);
+                Toolbar mtool=findViewById(R.id.toolbar);
+                mtool.setVisibility(View.INVISIBLE);
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 locked=!locked;
             }
@@ -608,16 +601,10 @@ window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);*/
 
     private Button buttontemp;
     private String Buttonnamex;
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if(b){
-            isEditMode=true;
-            Toast.makeText(this,"Enter Edit Mode",Toast.LENGTH_LONG).show();
-        }else{
-            isEditMode=false;
-            Toast.makeText(this,"Button Text has saved",Toast.LENGTH_LONG).show();
-        }
-    }
+//    @Override
+//    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//
+//    }
     private void Inputbox(Button mbutton,String Buttonname){
         EdittextDialog.show();
         View viewx = findViewById(R.id.linearLayout);
@@ -671,56 +658,75 @@ window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);*/
         }
         mbutton.setText(text);
     }
-    public static int getHeight(Context context) {
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-        DisplayMetrics dm = new DisplayMetrics();
-        display.getMetrics(dm);
-        int height = dm.heightPixels;
-        return height;
-    }
-    public static int getRealHeight(Context context) {
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-        DisplayMetrics dm = new DisplayMetrics();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            display.getRealMetrics(dm);
-        } else {
-            display.getMetrics(dm);
-        }
-        int realHeight = dm.heightPixels;
-        return realHeight;
-    }
 
 
+    boolean edit_flag=true;
     private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
+
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
-            switch (menuItem.getItemId()) {
-                case R.id.sensitivelay:
-                    getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.CONFIRM);
-                    yourDialog.show();
 
-                    View viewx = findViewById(R.id.linearLayout);
-                    Bitmap bitmap2 = Bitmap.createBitmap(viewx.getWidth(), viewx.getHeight(), Bitmap.Config.ARGB_8888);
-                    Bitmap bitmap=Bitmap.createBitmap(viewx.getWidth(),viewx.getHeight(),Bitmap.Config.ARGB_8888);
-                    Canvas canvasback=new Canvas(bitmap);
-                    canvasback.drawColor(ContextCompat.getColor(MainActivity.this, R.color.background));
-                    Canvas canvas = new Canvas();
-                    canvas.setBitmap(bitmap2);
-                    viewx.draw(canvas);
-                    bitmap2=blur(bitmap2,25);
-                    bitmap2=mergeBitmap(bitmap,bitmap2);
-                    Animation alphaAnimation = new AlphaAnimation(0f, 1f);
-                    alphaAnimation.setDuration(100);//设置动画持续时间为500毫秒
-                    alphaAnimation.setFillAfter(false);//设置动画结束后保持当前的位置（即不返回到动画开始前的位置）
-                    ImageView backg=findViewById(R.id.imageView);
-                    backg.setAnimation(alphaAnimation);
-                    backg.setImageBitmap(bitmap2);
-                    backg.setVisibility(View.VISIBLE);
-                    break;
-            }
-            return true;
+                switch (menuItem.getItemId()) {
+                    case R.id.sensitivelay:
+                        getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+                        yourDialog.show();
+
+                        View viewx = findViewById(R.id.linearLayout);
+                        Bitmap bitmap2 = Bitmap.createBitmap(viewx.getWidth(), viewx.getHeight(), Bitmap.Config.ARGB_8888);
+                        Bitmap bitmap = Bitmap.createBitmap(viewx.getWidth(), viewx.getHeight(), Bitmap.Config.ARGB_8888);
+                        Canvas canvasback = new Canvas(bitmap);
+                        canvasback.drawColor(ContextCompat.getColor(MainActivity.this, R.color.background));
+                        Canvas canvas = new Canvas();
+                        canvas.setBitmap(bitmap2);
+                        viewx.draw(canvas);
+                        bitmap2 = blur(bitmap2, 25);
+                        bitmap2 = mergeBitmap(bitmap, bitmap2);
+                        Animation alphaAnimation = new AlphaAnimation(0f, 1f);
+                        alphaAnimation.setDuration(100);//设置动画持续时间为500毫秒
+                        alphaAnimation.setFillAfter(false);//设置动画结束后保持当前的位置（即不返回到动画开始前的位置）
+                        ImageView backg = findViewById(R.id.imageView);
+                        backg.setAnimation(alphaAnimation);
+                        backg.setImageBitmap(bitmap2);
+                        backg.setVisibility(View.VISIBLE);
+                        break;
+                    case R.id.app_bar_switch:
+                        if (edit_flag) {
+                            isEditMode = true;
+                            Toast.makeText(MainActivity.this, "Enter Edit Mode", Toast.LENGTH_LONG).show();
+                            edit_flag = !edit_flag;
+                        } else {
+                            isEditMode = false;
+                            Toast.makeText(MainActivity.this, "Button Text has saved", Toast.LENGTH_LONG).show();
+                            edit_flag = !edit_flag;
+                        }
+                        break;
+                    case R.id.joystick_sw:
+                        LinearLayout Joysticklayout=findViewById(R.id.joystick_layout);
+                        if( Joysticklayout.getVisibility()==View.VISIBLE){
+                            TranslateAnimation   mHiddenAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
+                                    0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                                    -1.0f);
+                            mHiddenAction.setDuration(200);
+                            mHiddenAction.setInterpolator(new AccelerateInterpolator());
+                            Joysticklayout.startAnimation(mHiddenAction);
+                            Joysticklayout.setVisibility(View.GONE);
+                        }else{
+                            TranslateAnimation mShowAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                                    -1.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+                            mShowAction.setDuration(200);
+                            mShowAction.setInterpolator(new AccelerateInterpolator());
+                            Joysticklayout.startAnimation(mShowAction);
+                            Joysticklayout.setVisibility(View.VISIBLE);
+                        }
+                        break;
+                    case R.id.about_menu:
+                        Toast.makeText(MainActivity.this,"Thank For Using,Please report bugs in github.Playxboxtion963",Toast.LENGTH_LONG).show();
+                        break;
+                }
+                return true;
+
         }
     };
     //oled防烧代码
@@ -766,11 +772,12 @@ window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);*/
                 cm.setSaturation(1);
                 paint.setColorFilter(new ColorMatrixColorFilter(cm));
                 getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, paint);
-                findViewById(R.id.sensitivelay).setVisibility(View.VISIBLE);
+//                findViewById(R.id.sensitivelay).setVisibility(View.VISIBLE);
                 findViewById(R.id.LOCK).startAnimation(alphaAnimation);
                 findViewById(R.id.LOCK).setVisibility(View.INVISIBLE);
-                findViewById(R.id.editmode).setVisibility(View.VISIBLE);
-
+//                findViewById(R.id.editmode).setVisibility(View.VISIBLE);
+                Toolbar mtool=findViewById(R.id.toolbar);
+                mtool.setVisibility(View.VISIBLE);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 locked=!locked;
             }
@@ -797,5 +804,150 @@ window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);*/
         canvas.drawBitmap(bitmap, 0, 0, paint);
         return bm;
     }
+    public void joystick_show(){
+        final double[] angle_all = new double[1];
+        final int[] distance = new int[1];
+        MyRockerView myRockerView=findViewById(R.id.rocker_view);
+        myRockerView.setOnShakeListener(MyRockerView.DirectionMode.DIRECTION_8, new MyRockerView.OnShakeListener() {
+            @Override
+            public void onStart() {
 
+            }
+
+            @Override
+            public void direction(MyRockerView.Direction direction) {
+                switch (direction){
+                    case DIRECTION_LEFT:
+                        break;
+                    case DIRECTION_RIGHT:
+                        break;
+                    case DIRECTION_UP:
+                        break;
+                    case DIRECTION_DOWN:
+                        break;
+                    case DIRECTION_UP_LEFT:
+                        break;
+                    case DIRECTION_UP_RIGHT:
+                        break;
+                    case DIRECTION_DOWN_LEFT:
+                        break;
+                    case DIRECTION_DOWN_RIGHT:
+                        break;
+                    case DIRECTION_CENTER:
+                        calculator_joystick(0,0);
+                        break;
+                }
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        });
+        myRockerView.setOnAngleChangeListener(new MyRockerView.OnAngleChangeListener() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void angle(double angle) {
+                calculator_joystick(distance[0], angle);
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        });
+        myRockerView.setOnDistanceLevelListener(new MyRockerView.OnDistanceLevelListener() {
+            @Override
+            public void onDistanceLevel(int level) {
+                distance[0] =level;
+                calculator_joystick(level, angle_all[0]);
+
+            }
+        });
+        MyRockerView myRockerView_2=findViewById(R.id.rocker_view_2);
+        myRockerView_2.setOnShakeListener(MyRockerView.DirectionMode.DIRECTION_8, new MyRockerView.OnShakeListener() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void direction(MyRockerView.Direction direction) {
+                switch (direction){
+                    case DIRECTION_LEFT:
+                        break;
+                    case DIRECTION_RIGHT:
+                        break;
+                    case DIRECTION_UP:
+                        break;
+                    case DIRECTION_DOWN:
+                        break;
+                    case DIRECTION_UP_LEFT:
+                        break;
+                    case DIRECTION_UP_RIGHT:
+                        break;
+                    case DIRECTION_DOWN_LEFT:
+                        break;
+                    case DIRECTION_DOWN_RIGHT:
+                        break;
+                    case DIRECTION_CENTER:
+                        calculator_joystick_2(0,0);
+                        break;
+                }
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        });
+        myRockerView_2.setOnAngleChangeListener(new MyRockerView.OnAngleChangeListener() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void angle(double angle) {
+                calculator_joystick_2(distance[0], angle);
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        });
+        myRockerView_2.setOnDistanceLevelListener(new MyRockerView.OnDistanceLevelListener() {
+            @Override
+            public void onDistanceLevel(int level) {
+                distance[0] =level;
+                calculator_joystick_2(level, angle_all[0]);
+
+            }
+        });
+    }
+    public void calculator_joystick(int distance,double angle){
+        if(locked){
+            return;
+        }
+        double radians = Math.toRadians(angle);
+        double joystick_x=(int) (Math.sin(radians)*distance+128);
+        double joystick_y=(int) (Math.cos(radians)*distance+128);
+        ms.left_stick_x= (int) joystick_x;
+        ms.left_stick_y= (int) joystick_y;
+    }
+    public void calculator_joystick_2(int distance,double angle){
+        if(locked){
+            return;
+        }
+        double radians = Math.toRadians(angle);
+        double joystick_x=(int) (Math.sin(radians)*distance+128);
+        double joystick_y=(int) (Math.cos(radians)*distance+128);
+        ms.right_stick_x= (int) joystick_x;
+        ms.right_stick_y= (int) joystick_y;
+    }
 }

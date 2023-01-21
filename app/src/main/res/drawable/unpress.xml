@@ -5,7 +5,7 @@
     >
 
     <!-- 圆角的半径 -->
-    <corners android:radius="90dp"/>
+    <corners android:radius="40dp"/>
 
     <!-- 填充颜色 -->
     <solid android:color="@color/buttonx"/>

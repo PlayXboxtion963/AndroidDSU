@@ -19,6 +19,8 @@ public class Controller {
     int connType;
     int[] macAddress;
     int battery;
+    int left_stick_x,left_stick_y;
+    int right_stick_x,right_stick_y;
     public void createcontroller(int state,int model,int connType,int[] macAddress,int battery){
         this.state=state;
         this.model=model;

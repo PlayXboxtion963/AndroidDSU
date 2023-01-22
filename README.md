@@ -3,13 +3,11 @@
 填入手机IP即可用手机的体感和虚拟按键。
 <h1>English:</h1>	
 
-A Wii virtual controller which use DSU protocol For Dophin Simulator.Provide Virtual Key and Motion   
+A Wii virtual controller which uses the [DSU protocol](https://v1993.github.io/cemuhook-protocol/) For Dophin Emulator/Yuzu/Citra/Cemu. Both buttons and motion controls are supported!
 
-I have search a virtual wii controller for a long period.Motionsource don't have virtual key So i had to code that...to avoid  when i want to   
+I've been looking for a virtual wii controller for a long time. [MotionSource](https://cemuhook.sshnuke.net/padudpserver.html) doesn't support virtual keys, so I wanted to create something that did. For example, this lets me avoid having to pull out my keyboard to change music in Just Dance.
 
-change music in justdance i need  go to the keyboard to change   
-
-That is preview,Remeber,You need to setting keymap in Dophin by you self  
+Remember that this is a **_preview_** application and bugs should be expected - please [report any issues](../../issues) you may find! Also, you'll need to map the buttons correctly in Dolphin (or any other emulator) yourself.
 
 <h1>Chinese:</h1>	
 这是一个基于DSU协议的WII虚拟控制器，MotionSource没有按键，我写了个带按键和体感模拟的，记得自己去Dophin里进行按键映射，同时音量下键=A，音量上=B

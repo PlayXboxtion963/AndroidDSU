@@ -1,58 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/elementseek"
     android:layout_width="300dp"
-
-    android:background="@drawable/background"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/background">
 
     <SeekBar
         android:id="@+id/your_dialog_seekbar"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        app:theme="@style/scstyle"
         android:layout_marginTop="16dp"
         android:thumb="@drawable/ic_gyro"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></SeekBar>
+        app:layout_constraintTop_toTopOf="parent"
+        app:theme="@style/scstyle" />
 
     <Button
         android:id="@+id/your_dialog_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/pressed"
         android:text="OK"
         android:textColor="@color/buttonx"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar"></Button>
+        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
     <SeekBar
         android:id="@+id/seekBar"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        app:theme="@style/scstyle"
         android:layout_marginTop="16dp"
+        android:thumb="@drawable/ic_accle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:thumb="@drawable/ic_accle"
-        app:layout_constraintTop_toBottomOf="@+id/your_dialog_seekbar"/>
+        app:layout_constraintTop_toBottomOf="@+id/your_dialog_seekbar"
+        app:theme="@style/scstyle" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/seekBar"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/your_dialog_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/your_dialog_button">
+        app:layout_constraintTop_toBottomOf="@id/seekBar">
 
         <TextView
             android:id="@+id/lighttext"
@@ -60,9 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Sensitive Set as"
-            android:textColor="@color/spical"
-
-            />
+            android:textColor="@color/spical" />
 
         <TextView
             android:id="@+id/acctext"
@@ -71,6 +67,7 @@
             android:layout_weight="1"
             android:text="Accelerometer set as"
             android:textColor="@color/spical" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

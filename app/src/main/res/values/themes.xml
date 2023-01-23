@@ -12,13 +12,13 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@color/background</item>
-
-        <!-- Customize your theme here. -->
     </style>
+
     <style name="MyEditText" parent="Theme.AppCompat.Light">
         <item name="colorControlNormal">@color/buttonx</item>
         <item name="colorControlActivated">@color/buttonx</item>
     </style>
+
     <style name="scstyle" parent="Theme.AppCompat.Light">
         <!--开启时的颜色-->
         <item name="colorControlActivated">@color/spical</item>
@@ -27,7 +27,4 @@
         <!--关闭时的轨迹颜色-->
         <item name="android:colorForeground">@color/buttonx</item>
     </style>
-
-
-
 </resources>

@@ -10,5 +10,4 @@
     <color name="background">@color/material_dynamic_secondary80</color>
     <color name="buttonx">@color/material_dynamic_primary99</color>
     <color name="spical">@color/material_dynamic_primary20</color>
-
 </resources>

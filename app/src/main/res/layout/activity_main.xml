@@ -14,8 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -28,52 +27,55 @@
                 android:textColor="@color/spical"
                 android:textSize="20sp" />
         </androidx.appcompat.widget.Toolbar>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_weight="3"
-        android:divider="@drawable/line"
-        android:orientation="horizontal"
-        android:padding="5dp"
-        android:showDividers="middle"
-        android:id="@+id/joystick_layout"
-        android:visibility="gone"
-        tools:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-        <com.shy.rockerview.MyRockerView
-            android:id="@+id/rocker_view"
+
+        <LinearLayout
+            android:id="@+id/joystick_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:rotation="-90.0"
-            android:layout_weight="1"
-            app:areaBackground="@color/spical"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="3"
+            android:divider="@drawable/line"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:showDividers="middle"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:rockerBackground="@color/buttonx"
-            app:rockerCallBackMode="CALL_BACK_MODE_STATE_CHANGE"
-            app:rockerScale="0.4"
-            app:rockerSpeedLevel="128" />
-        <com.shy.rockerview.MyRockerView
-            android:id="@+id/rocker_view_2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:rotation="-90.0"
-            android:layout_weight="1"
-            app:areaBackground="@color/buttonx"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:rockerBackground="@color/spical"
-            app:rockerCallBackMode="CALL_BACK_MODE_STATE_CHANGE"
-            app:rockerScale="0.4"
-            app:rockerSpeedLevel="128" />
-    </LinearLayout>
+            tools:visibility="visible">
+
+            <com.shy.rockerview.MyRockerView
+                android:id="@+id/rocker_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:rotation="-90.0"
+                app:areaBackground="@color/spical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:rockerBackground="@color/buttonx"
+                app:rockerCallBackMode="CALL_BACK_MODE_STATE_CHANGE"
+                app:rockerScale="0.4"
+                app:rockerSpeedLevel="128" />
+
+            <com.shy.rockerview.MyRockerView
+                android:id="@+id/rocker_view_2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:rotation="-90.0"
+                app:areaBackground="@color/buttonx"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:rockerBackground="@color/spical"
+                app:rockerCallBackMode="CALL_BACK_MODE_STATE_CHANGE"
+                app:rockerScale="0.4"
+                app:rockerSpeedLevel="128" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -90,17 +92,16 @@
             tools:layout_editor_absoluteX="165dp"
             tools:layout_editor_absoluteY="93dp">
 
+            <Button
+                android:id="@+id/button_home"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/unpress"
+                android:text="PS"
+                android:textColor="@color/background"
+                android:textStyle="bold" />
 
-                <Button
-                    android:id="@+id/button_home"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-
-                    android:layout_weight="1"
-                    android:background="@drawable/unpress"
-                    android:text="PS"
-                    android:textColor="@color/background"
-                    android:textStyle="bold" />
             <Button
                 android:id="@+id/button_dUp"
                 android:layout_width="wrap_content"
@@ -112,21 +113,17 @@
                 android:textSize="30dp"
                 android:textStyle="bold" />
 
-                <Button
-                    android:id="@+id/Button_touchlock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/pressed"
-                    android:text="LOCK"
-                    android:textColor="@color/background"
-                    android:textStyle="bold" />
-
-
+            <Button
+                android:id="@+id/Button_touchlock"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/pressed"
+                android:text="LOCK"
+                android:textColor="@color/background"
+                android:textStyle="bold" />
 
         </LinearLayout>
-
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -154,6 +151,7 @@
                 android:textColor="@color/background"
                 android:textSize="30dp"
                 android:textStyle="bold" />
+
             <Button
                 android:id="@+id/button_Ddown"
                 android:layout_width="wrap_content"
@@ -165,6 +163,7 @@
                 android:textColor="@color/background"
                 android:textSize="30dp"
                 android:textStyle="bold" />
+
             <Button
                 android:id="@+id/button_Dright"
                 android:layout_width="wrap_content"
@@ -177,8 +176,6 @@
                 android:textSize="30dp"
                 android:textStyle="bold" />
         </LinearLayout>
-
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -199,9 +196,9 @@
                 android:id="@+id/button_PLUS"
                 android:layout_width="80dp"
                 android:layout_height="match_parent"
+                android:layout_margin="5dp"
                 android:layout_marginTop="1dp"
                 android:layout_weight="1"
-                android:layout_margin="5dp"
                 android:background="@drawable/unpress"
                 android:text="-"
                 android:textColor="@color/background"
@@ -212,14 +209,15 @@
                 android:id="@+id/button_DEDUCE"
                 android:layout_width="80dp"
                 android:layout_height="match_parent"
+                android:layout_margin="5dp"
                 android:layout_marginTop="1dp"
                 android:layout_weight="1"
-                android:layout_margin="5dp"
                 android:background="@drawable/unpress"
                 android:text="+"
                 android:textColor="@color/background"
                 android:textSize="30dp"
                 android:textStyle="bold" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -241,9 +239,9 @@
                 android:id="@+id/button_B"
                 android:layout_width="145dp"
                 android:layout_height="match_parent"
+                android:layout_margin="5dp"
                 android:layout_marginTop="1dp"
                 android:layout_weight="1"
-                android:layout_margin="5dp"
                 android:background="@drawable/unpress"
                 android:text="B"
                 android:textColor="@color/background"
@@ -254,51 +252,51 @@
                 android:id="@+id/button_A"
                 android:layout_width="145dp"
                 android:layout_height="match_parent"
+                android:layout_margin="5dp"
                 android:layout_marginTop="1dp"
                 android:layout_weight="1"
-                android:layout_margin="5dp"
                 android:background="@drawable/unpress"
                 android:text="A"
                 android:textColor="@color/background"
                 android:textSize="30dp"
                 android:textStyle="bold" />
+
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:orientation="vertical">
 
-            android:orientation="vertical"
-            >
             <Button
-            android:id="@+id/button_R2"
-            android:layout_width="126dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/unpress"
-            android:text="1"
-            android:textColor="@color/background"
-            android:layout_gravity="center_horizontal"
-            android:textSize="30dp"
-            android:textStyle="bold" />
+                android:id="@+id/button_R2"
+                android:layout_width="126dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/unpress"
+                android:text="1"
+                android:textColor="@color/background"
+                android:textSize="30dp"
+                android:textStyle="bold" />
+
             <Button
                 android:id="@+id/button_L2"
                 android:layout_width="127dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/unpress"
                 android:text="2"
-                android:layout_gravity="center_horizontal"
                 android:textColor="@color/background"
                 android:textSize="30dp"
-                android:textStyle="bold" /></LinearLayout>
+                android:textStyle="bold" />
 
-
-
-
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -383,8 +381,6 @@
 
         </LinearLayout>
 
-
-
     </LinearLayout>
 
     <ImageView
@@ -398,6 +394,7 @@
         android:id="@+id/LOCK"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
         android:background="@drawable/pressed"
         android:padding="15dp"
         android:text="Long press to unlock"
@@ -408,8 +405,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="70dp"
         tools:visibility="invisible" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

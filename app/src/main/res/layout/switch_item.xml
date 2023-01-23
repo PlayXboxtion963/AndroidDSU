@@ -1,17 +1,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/editmode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:theme="@style/scstyle"
-        android:thumb="@drawable/ic_cicr"
-        android:textColor="@color/spical"
-        android:layout_marginEnd="15dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="15dp"
+        android:textColor="@color/spical"
+        android:thumb="@drawable/ic_cicr"
+        app:theme="@style/scstyle" />
 
 </RelativeLayout>

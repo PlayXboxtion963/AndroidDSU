@@ -2,21 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/elementseek2"
     android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:background="@drawable/background"
-    android:padding="10dp"
-    android:showDividers="middle"
     android:divider="@drawable/line"
-    android:layout_height="wrap_content">
+    android:padding="10dp"
+    android:showDividers="middle">
 
     <EditText
         android:id="@+id/btncontent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textColor="@color/buttonx"
-        android:theme="@style/MyEditText"
         android:ems="5"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:textColor="@color/buttonx"
+        android:theme="@style/MyEditText" />
 
     <Button
         android:id="@+id/cancelbtn"
@@ -24,8 +24,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/pressed"
         android:text="Cancel"
-        android:textColor="@color/buttonx"
-         />
+        android:textColor="@color/buttonx" />
 
     <Button
         android:id="@+id/okbtn"
@@ -33,6 +32,6 @@
         android:layout_height="wrap_content"
         android:background="@drawable/pressed"
         android:text="OK"
-        android:textColor="@color/buttonx"
-        />
+        android:textColor="@color/buttonx" />
+
 </LinearLayout>

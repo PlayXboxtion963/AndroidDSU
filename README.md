@@ -1,6 +1,9 @@
-# Riimote 
-适用于Dolphin模拟器的Android手柄，在模拟器设置中
+# Readme
+EN-US:A android software that compatitable with Cemuhook protocol.Provide Full button support and motion data support.
+
+ZH-CN:适用于Dolphin模拟器的Android手柄，在模拟器设置中
 填入手机IP即可用手机的体感和虚拟按键。
+
 <h1>English:</h1>	
 
 A Wii virtual controller which uses the [DSU protocol](https://v1993.github.io/cemuhook-protocol/) For Dophin Emulator/Yuzu/Citra/Cemu. Both buttons and motion controls are supported!

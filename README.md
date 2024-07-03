@@ -76,7 +76,7 @@ Android Server For Cemuhook Protocol（DSU Dualshock UDP）
 
 <p align="center">
   <a href="https://github.com/PlayXboxtion963/AndroidDSU">
-    <img src="introduction/UI3.png"  alt="Logo"  height="250">
+    <img src="introduction/ui3.png"  alt="Logo"  height="250">
   </a>
 
 ###### 环境

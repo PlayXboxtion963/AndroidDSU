@@ -1,4 +1,4 @@
-package com.plawyue.wiimotedsu;
+package com.plawyue.AndroidDSU;
 
 import android.content.Context;
 

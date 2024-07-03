@@ -23,16 +23,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/pressed"
-        android:text="Cancel"
-        android:textColor="@color/buttonx"
-         />
+        android:text="@string/Notips"
+        android:textColor="@color/buttonx" />
 
     <Button
         android:id="@+id/okbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/pressed"
-        android:text="OK"
-        android:textColor="@color/buttonx"
-        />
+        android:text="@string/oktips"
+        android:textColor="@color/buttonx" />
 </LinearLayout>

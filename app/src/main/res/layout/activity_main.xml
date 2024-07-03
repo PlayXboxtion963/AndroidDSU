@@ -19,14 +19,33 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/spical"
-                android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/Serveripaddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/spical"
+                    android:textSize="20sp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"/>
+
+                <ImageView
+                    android:id="@+id/ConnectState_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_cloud_off_24"
+                    android:layout_toEndOf="@id/Serveripaddress"
+                    android:layout_marginStart="10dp"
+                    android:layout_centerVertical="true"/>
+
+            </RelativeLayout>
+
         </androidx.appcompat.widget.Toolbar>
     <LinearLayout
         android:layout_width="match_parent"
@@ -118,7 +137,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/pressed"
-                    android:text="LOCK"
+                    android:text="@string/lockbutton"
                     android:textColor="@color/background"
                     android:textStyle="bold" />
 
@@ -136,7 +155,7 @@
             android:layout_weight="1"
             android:divider="@drawable/line"
             android:orientation="horizontal"
-            android:padding="10dp"
+            android:padding="5dp"
             android:showDividers="middle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -400,7 +419,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/pressed"
         android:padding="15dp"
-        android:text="Long press to unlock"
+        android:text="@string/UnLockTips"
         android:textColor="@color/background"
         android:textSize="20dp"
         android:textStyle="bold"

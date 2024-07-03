@@ -1,4 +1,4 @@
-package com.plawyue.wiimotedsu;
+package com.plawyue.AndroidDSU;
 
 import org.junit.Test;
 

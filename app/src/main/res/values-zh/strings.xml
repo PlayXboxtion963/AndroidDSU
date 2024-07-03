@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">AndroidDSU</string>
+    <string name="Menu_JoyStick">虚拟摇杆</string>
+    <string name="Menu_Edit">编辑按钮文本</string>
+    <string name="Menu_Sense">传感器调整</string>
+    <string name="Menu_About">关于</string>
+    <string name="Content_about">感谢使用，请在Github上点赞/提Bug，@Playxboxtion963</string>
+    <string name="gyrotips">陀螺仪增益设置为:</string>
+    <string name="Acctips">加速度计增益设置为:</string>
+    <string name="gainsaved">增益值已保存</string>
+    <string name="btnSaved">按钮文本已保存</string>
+    <string name="editmodeent">进入按钮文本编辑模式,点击任意按钮以编辑</string>
+    <string name="oktips">确定</string>
+    <string name="Notips">取消</string>
+    <string name="Menu_Editsave">保存按钮文本</string>
+    <string name="UnLockTips">长按以解锁</string>
+    <string name="lockbutton">锁定</string>
+
+</resources>

@@ -1,3 +1,19 @@
 <resources>
-    <string name="app_name">WiiMote</string>
+    <string name="app_name">AndroidDSU</string>
+    <string name="Menu_JoyStick">Joystick</string>
+    <string name="Menu_Edit">EditButtonText</string>
+    <string name="Menu_Sense">SenseGain</string>
+    <string name="Menu_About">About</string>
+    <string name="Content_about">Thank For Using,Please report bugs in github.Playxboxtion963</string>
+    <string name="gyrotips">Gyroscope gain set as:</string>
+    <string name="Acctips">Accelerometer gain set as:</string>
+    <string name="gainsaved">Gain Saved</string>
+    <string name="btnSaved">Button Text has saved</string>
+    <string name="editmodeent">Enter Edit mode</string>
+    <string name="oktips">OK</string>
+    <string name="Notips">Cancel</string>
+    <string name="Menu_Editsave">SaveButtonText</string>
+    <string name="UnLockTips">Long Press to unlock</string>
+    <string name="lockbutton">LOCK</string>
+
 </resources>

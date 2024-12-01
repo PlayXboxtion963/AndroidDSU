@@ -324,13 +324,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 float accX = -Accsensitvity*event.values[2] * METER_PER_SECOND_SQUARED_TO_G / 100;
                 float accY =  -Accsensitvity*event.values[0] * METER_PER_SECOND_SQUARED_TO_G / 100;
                 float accZ =Accsensitvity*event.values[1] * METER_PER_SECOND_SQUARED_TO_G / 100;
-                DecimalFormat df = new DecimalFormat("#.00");
-                DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                symbols.setDecimalSeparator('.');
-                df.setDecimalFormatSymbols(symbols);
-                gs_DsuCtrlUIData.accelX= Float.parseFloat(df.format(accY));
-                gs_DsuCtrlUIData.accelY=Float.parseFloat(df.format(accX));
-                gs_DsuCtrlUIData.accelZ=Float.parseFloat(df.format(accZ));
+                gs_DsuCtrlUIData.accelX= accY;
+                gs_DsuCtrlUIData.accelY=accX;
+                gs_DsuCtrlUIData.accelZ=accZ;
 
 
             }

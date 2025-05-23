@@ -115,7 +115,9 @@ public class DsuPacket {
             // 将ArrayList转换为byte数组
             byte[] bytes = new byte[Msgpack.size()];
             for (int i = 0; i < Msgpack.size(); i++) {
-                bytes[i] = Msgpack.get(i);
+                if(Msgpack.get(i) != null) {
+                    bytes[i] = Msgpack.get(i);
+                }
             }
             // 创建CRC32实例
             CRC32 crc = new CRC32();

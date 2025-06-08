@@ -9,6 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="background">@color/material_dynamic_secondary10</color>
     <color name="buttonx">@color/material_dynamic_primary70</color>
-    <color name="spical">@color/material_dynamic_primary50</color>
+    <color name="spical">@color/material_dynamic_primary90</color>
 
 </resources>

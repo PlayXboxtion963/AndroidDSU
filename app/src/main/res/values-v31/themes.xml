@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
     <style name="Theme.AndroidDSU" parent="Theme.MaterialComponents.DayNight.NoActionBar.Bridge">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/buttonx</item>
@@ -24,26 +25,4 @@
         <item name="android:windowSplashScreenAnimationDuration">50</item>
         <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
     </style>
-    <style name="MyEditText" parent="Theme.AppCompat.Light">
-        <item name="colorControlNormal">@color/buttonx</item>
-        <item name="colorControlActivated">@color/buttonx</item>
-    </style>
-    <style name="scstyle" parent="Theme.AppCompat.Light">
-        <!--开启时的颜色-->
-        <item name="colorControlActivated">@color/spical</item>
-        <!--关闭时的颜色-->
-        <item name="colorSwitchThumbNormal">@color/buttonx</item>
-        <!--关闭时的轨迹颜色-->
-        <item name="android:colorForeground">@color/buttonx</item>
-    </style>
-    <style name="OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
-        <item name="overlapAnchor">false</item>
-        <item name="android:dropDownVerticalOffset">4dp</item>
-        <item name="android:layout_marginRight">4dp</item>
-        <item name="android:popupBackground">@drawable/background</item>
-
-    </style>
-
-
-
 </resources>

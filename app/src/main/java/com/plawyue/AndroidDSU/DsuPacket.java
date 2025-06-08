@@ -2,6 +2,7 @@ package com.plawyue.AndroidDSU;
 
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.zip.CRC32;
@@ -10,7 +11,7 @@ public class DsuPacket {
     /* Dsu协议包头部分 */
     public static final int     PROTOCOL_Ver               = 1001;                  //当前版本类型——DEC
     public static final Byte[]  PROTOCOL_Heard             =  {'D','S','U','S'};    //报文固定头
-    public static final int     PROTOCOL_ServerID          = 1234;                  //随机的ID
+    public static final int     PROTOCOL_ServerID          = new SecureRandom().nextInt();                //随机的ID
     public static int           PacketCounter              = 0;
     /* Message types 报文类型定义 */
     public static final int PROTOCOL_VERSION_INFO      = 0x100000;
@@ -268,8 +269,9 @@ public class DsuPacket {
 
 
                 //无触摸数据
+
                 for(int i = 0 ; i < 12; i ++){
-                    Msgpack.add((byte) 0);
+                    Msgpack.add((byte) mDsuCtrl.TouchStruce[i]);
                 }
             }
             {

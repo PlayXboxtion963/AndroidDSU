@@ -53,6 +53,7 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
@@ -73,6 +74,7 @@ import com.shy.rockerview.MyRockerView;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Timer;
 
@@ -106,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         //初始化相关
         UIInit();
         ButtonInit();
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     public void UIInit()
     {
         Window window =this.getWindow();
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN );
         window.setStatusBarColor(Color.TRANSPARENT);
 
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -192,7 +193,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         EdittextDialog.setCanceledOnTouchOutside(false);
         EdittextDialog.setCancelable(false);
         getWindow().setNavigationBarColor(ContextCompat.getColor(MainActivity.this, R.color.background));
-
+        VirtualTouchpadView touchpad = findViewById(R.id.touchpad);
+        touchpad.setTouchDataCallback(data -> {
+            // 这里处理触摸数据（例如发送到网络）
+            gs_DsuCtrlUIData.TouchStruce = Arrays.copyOf(data,12);
+        });
     }
     public void ButtonInit()
     {
@@ -792,6 +797,27 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                         mShowAction.setInterpolator(new AccelerateInterpolator());
                         Joysticklayout.startAnimation(mShowAction);
                         Joysticklayout.setVisibility(View.VISIBLE);
+                    }
+                    break;
+                case R.id.touchpad_sw:
+                    VirtualTouchpadView touchpad = findViewById(R.id.touchpad);
+                    if( touchpad.getVisibility()==View.VISIBLE){
+                        TranslateAnimation   mHiddenAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
+                                0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                                -1.0f);
+                        mHiddenAction.setDuration(200);
+                        mHiddenAction.setInterpolator(new AccelerateInterpolator());
+                        touchpad.startAnimation(mHiddenAction);
+                        touchpad.setVisibility(View.GONE);
+                    }else{
+                        TranslateAnimation mShowAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                                -1.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+                        mShowAction.setDuration(200);
+                        mShowAction.setInterpolator(new AccelerateInterpolator());
+                        touchpad.startAnimation(mShowAction);
+                        touchpad.setVisibility(View.VISIBLE);
                     }
                     break;
                 case R.id.about_menu:

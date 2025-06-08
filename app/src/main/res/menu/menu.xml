@@ -2,7 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
-
+    <item
+        android:id="@+id/touchpad_sw"
+        android:orderInCategory="78"
+        android:title="@string/TouchPad"
+        android:icon="@drawable/ic_joystick"
+        />
     <item
         android:id="@+id/joystick_sw"
         android:orderInCategory="79"

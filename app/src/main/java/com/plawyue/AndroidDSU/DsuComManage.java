@@ -12,6 +12,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -220,7 +221,7 @@ public class DsuComManage {
                 mController[0].left_stick_x= gs_DsuCtrlUIData.left_stick_x;
                 mController[0].right_stick_y= gs_DsuCtrlUIData.right_stick_y;
                 mController[0].right_stick_x= gs_DsuCtrlUIData.right_stick_x;
-
+                mController[0].TouchStruce = Arrays.copyOf(gs_DsuCtrlUIData.TouchStruce,12);
                 //2.网络组包与回复
 
                 // 创建一个ByteArrayOutputStream实例

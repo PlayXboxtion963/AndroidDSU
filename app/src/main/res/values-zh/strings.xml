@@ -15,5 +15,6 @@
     <string name="Menu_Editsave">保存按钮文本</string>
     <string name="UnLockTips">长按以解锁</string>
     <string name="lockbutton">锁定</string>
+    <string name="TouchPad">触摸板</string>
 
 </resources>

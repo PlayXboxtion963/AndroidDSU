@@ -35,7 +35,8 @@ public class DsuCtrlType {
     public static final int RUMBLE_NO_SUPPORT    = 0;
     public static final int RUMBLE_SINGLEMOTOR   = 1;
     public static final int RUMBLE_DOUBLEMOTOR   = 2;
-
+    public static final int  TOUCH_X_AXIS_MAX = 1000;
+    public static final int TOUCH_Y_AXIS_MAX = 500;
 
     //Part 2.  控制器数据部分
 
@@ -55,7 +56,7 @@ public class DsuCtrlType {
     int right_stick_x,right_stick_y;
 
     byte ControlMotorType;
-
+    byte[] TouchStruce = new byte[12];
     //Part 3.   外部接口部分
     Byte   SlotNum;           //插槽序号
     Byte   SlotState;         //插槽状态
@@ -63,4 +64,6 @@ public class DsuCtrlType {
     Byte   CntType;           //链接方式
     Byte   DeviceBattery;     //设备电量
     Byte[] DeviceMac ;
+
+
 }

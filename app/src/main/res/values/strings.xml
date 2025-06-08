@@ -15,5 +15,6 @@
     <string name="Menu_Editsave">SaveButtonText</string>
     <string name="UnLockTips">Long Press to unlock</string>
     <string name="lockbutton">LOCK</string>
+    <string name="TouchPad">TouchPad</string>
 
 </resources>

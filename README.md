@@ -62,6 +62,7 @@ Android Server For Cemuhook Protocol（DSU Dualshock UDP）
 | Android实体音量按键支持 | ✅ |
 | 双虚拟摇杆支持 | ✅ |
 | 可自定义灵敏度 | ✅ |
+| 中文/英语 界面| ✅ |
 
 ###### UI与界面
 
@@ -109,6 +110,8 @@ Android Server for Cemuhook Protocol (DSU DualShock UDP)
 | Android physical volume button support | ✅ |
 | Dual virtual joysticks | ✅ |
 | Customizable sensitivity | ✅ |
+| Chinese/English UI | ✅ |
+
 
 #### Screenshots
 

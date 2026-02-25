@@ -23,9 +23,9 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew assembleRelease
+      run: ./gradlew assembleDebug          # 改为 assembleDebug
     - name: Upload APK as Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: app-apk    
-        path: app/build/outputs/apk/release/*.apk   
+        name: app-apk
+        path: app/build/outputs/apk/debug/*.apk   # 改为 debug 目录
